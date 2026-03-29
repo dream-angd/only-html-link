@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ko" class="theme-dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026.04.04 데이트 코스</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { interpolate-size: allow-keywords; }
+
+    html.theme-dark {
+      --bg: #0A0A0A; --surface: #141414; --surface-hover: #1C1C1C;
+      --border: rgba(255,255,255,0.06);
+      --text: #EDEDED; --text-secondary: #888;
+      --accent: #f472b6; --accent-secondary: #a78bfa;
+      --positive: #10b981; --negative: #f43f5e; --warning: #f59e0b;
+      --glass-bg: rgba(255,255,255,0.04);
+    }
+    html.theme-light {
+      --bg: #FFF8F5; --surface: #FFFFFF; --surface-hover: #FEF2EE;
+      --border: rgba(0,0,0,0.06);
+      --text: #1a1020; --text-secondary: #8b7a8e;
+      --accent: #e11d78; --accent-secondary: #7c3aed;
+      --positive: #059669; --negative: #e11d48; --warning: #d97706;
+      --glass-bg: rgba(0,0,0,0.02);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.6; -webkit-font-smoothing: antialiased;
+      margin: 0; padding: 0;
+      overflow: hidden;
+      height: 100vh; height: 100dvh;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+      color: var(--text);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      text-wrap: balance;
+    }
+    h1 { font-weight: 800; font-size: clamp(2.5rem, 6vw, 4rem); }
+    h2 { font-weight: 700; font-size: clamp(2rem, 5vw, 3rem); }
+    h3 { font-weight: 600; font-size: 1.5rem; }
+    p, li, span, label { color: var(--text); font-weight: 400; }
+    .text-secondary { color: var(--text-secondary); }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideInLeft { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    .animate { animation: fadeInUp 0.6s ease-out both; }
+    .animate.delay-1 { animation-delay: 0.1s; }
+    .animate.delay-2 { animation-delay: 0.2s; }
+    .animate.delay-3 { animation-delay: 0.3s; }
+    .animate.delay-4 { animation-delay: 0.4s; }
+    .animate.delay-5 { animation-delay: 0.5s; }
+    .animate.delay-6 { animation-delay: 0.6s; }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      body { background: white !important; color: black !important; overflow: visible !important; height: auto !important; }
+      .viz-menu, .slide-nav { display: none !important; }
+      .slide { page-break-after: always; height: auto !important; min-height: 100vh; }
+      .card { break-inside: avoid; border: 1px solid #ddd; box-shadow: none; }
+      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .progress-bar { display: none !important; }
+    }
+    @page { margin: 0.5in; }
+
+    /* ===== MENU ===== */
+    .viz-menu { position: fixed; top: 16px; right: 16px; z-index: 9999; }
+    .viz-menu-toggle {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(12px); transition: all 0.2s;
+    }
+    .viz-menu-toggle:hover { background: var(--surface-hover); }
+    .viz-menu-dropdown {
+      position: absolute; top: 52px; right: 0; min-width: 200px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px;
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: all 0.2s; backdrop-filter: blur(16px);
+    }
+    .viz-menu-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    .viz-menu-dropdown button {
+      width: 100%; padding: 10px 14px; border: none; border-radius: 8px;
+      background: transparent; color: var(--text); font-size: 14px;
+      font-family: inherit; cursor: pointer; text-align: left;
+      display: flex; align-items: center; gap: 10px; transition: background 0.15s;
+    }
+    .viz-menu-dropdown button:hover { background: var(--surface-hover); }
+
+    .skip-link {
+      position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden;
+      z-index: 10000; padding: 8px 16px; background: var(--accent); color: white;
+      text-decoration: none; border-radius: 4px;
+    }
+    .skip-link:focus {
+      position: fixed; left: 16px; top: 16px; width: auto; height: auto; overflow: visible;
+    }
+
+    /* ===== SLIDES ===== */
+    .slides-wrapper {
+      width: 100%; height: 100vh; height: 100dvh;
+      overflow: hidden; position: relative;
+    }
+    .slides-track {
+      display: flex;
+      width: 100%; height: 100%;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .slide {
+      min-width: 100%; width: 100%;
+      height: 100vh; height: 100dvh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 48px;
+      position: relative;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .slide-inner {
+      max-width: 960px; width: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 32px; text-align: center;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+      z-index: 9998; transition: width 0.5s ease;
+    }
+
+    /* Slide backgrounds */
+    .slide-title-bg {
+      background: var(--bg);
+      position: relative;
+    }
+    .slide-title-bg::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(244,114,182,0.08) 0%, transparent 70%),
+                  radial-gradient(ellipse at 70% 50%, rgba(167,139,250,0.06) 0%, transparent 70%);
+    }
+    .theme-light .slide-title-bg::before {
+      background: radial-gradient(ellipse at 30% 50%, rgba(225,29,120,0.06) 0%, transparent 70%),
+                  radial-gradient(ellipse at 70% 50%, rgba(124,58,237,0.05) 0%, transparent 70%);
+    }
+
+    .slide-section-bg {
+      position: relative;
+    }
+    .theme-dark .slide-section-bg { background: linear-gradient(135deg, #1a0a1e 0%, #0d1117 50%, #0a0a1a 100%); }
+    .theme-light .slide-section-bg { background: linear-gradient(135deg, #fce7f3 0%, #fff1f2 50%, #ede9fe 100%); }
+
+    .slide-content-bg { background: var(--bg); }
+
+    /* Cards */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px;
+      transition: box-shadow 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: 0 0 0 1px var(--border), 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Time badge */
+    .time-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--glass-bg); border: 1px solid var(--border);
+      border-radius: 100px; padding: 8px 20px;
+      font-size: 0.95rem; font-weight: 500; color: var(--text-secondary);
+      backdrop-filter: blur(8px);
+    }
+    .time-badge .time {
+      color: var(--accent); font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    /* Icon circle */
+    .icon-circle {
+      width: 72px; height: 72px; border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      box-shadow: 0 4px 16px rgba(244,114,182,0.25);
+      flex-shrink: 0;
+    }
+    .icon-circle svg { width: 36px; height: 36px; color: white; }
+
+    /* Timeline item */
+    .timeline-item {
+      display: flex; gap: 24px; align-items: flex-start;
+      text-align: left; width: 100%; max-width: 640px;
+    }
+    .timeline-content { flex: 1; }
+    .timeline-content h3 { margin-bottom: 6px; font-size: 1.35rem; }
+    .timeline-content p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; }
+
+    /* Tip card */
+    .tip-card {
+      background: var(--glass-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px;
+      display: flex; gap: 16px; align-items: flex-start;
+      text-align: left; backdrop-filter: blur(8px);
+    }
+    .tip-card svg { flex-shrink: 0; color: var(--accent); margin-top: 2px; }
+    .tip-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; }
+
+    /* Tags */
+    .tag {
+      display: inline-block; padding: 6px 16px;
+      border-radius: 100px; font-size: 0.85rem; font-weight: 500;
+      background: var(--glass-bg); border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    .tag-accent {
+      background: linear-gradient(135deg, rgba(244,114,182,0.15), rgba(167,139,250,0.15));
+      border-color: rgba(244,114,182,0.2); color: var(--accent);
+    }
+
+    /* Date label */
+    .date-label {
+      font-size: 1rem; font-weight: 600; color: var(--accent);
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .subtitle {
+      font-size: 1.15rem; color: var(--text-secondary); font-weight: 400;
+      max-width: 520px; line-height: 1.6;
+    }
+
+    /* Big emoji */
+    .big-emoji { font-size: 4rem; line-height: 1; margin-bottom: 8px; }
+
+    /* Grid */
+    .grid-2 {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+      width: 100%; max-width: 640px; text-align: left;
+    }
+
+    /* Summary timeline */
+    .summary-row {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      text-align: left; width: 100%; max-width: 640px;
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-time {
+      font-size: 0.9rem; font-weight: 700; color: var(--accent);
+      min-width: 80px;
+    }
+    .summary-label { font-size: 1rem; color: var(--text); flex: 1; }
+    .summary-icon { font-size: 1.3rem; }
+
+    /* Nav */
+    .slide-nav {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 10px; z-index: 9998;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 100px; padding: 6px 16px;
+      backdrop-filter: blur(16px);
+    }
+    .slide-nav button {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: transparent; border: none; color: var(--text-secondary);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .slide-nav button:hover { background: var(--surface-hover); color: var(--text); }
+    .slide-counter {
+      font-size: 13px; color: var(--text-secondary); font-weight: 500;
+      min-width: 48px; text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .slide { padding: 48px 24px; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .timeline-item { flex-direction: column; align-items: center; text-align: center; }
+      h1 { font-size: 2.2rem; }
+      h2 { font-size: 1.8rem; }
+    }
+    @media (max-width: 375px) {
+      body { overflow-x: hidden; }
+      .slide { padding: 40px 16px; }
+      .card { padding: 20px; }
+      h1 { font-size: 1.8rem; }
+    }
+
+    /* Details accordion */
+    details { overflow: hidden; }
+    details summary { cursor: pointer; list-style: none; }
+    details summary::-webkit-details-marker { display: none; }
+    ::details-content {
+      transition: block-size 0.3s ease, opacity 0.3s ease;
+      block-size: 0; opacity: 0; overflow: hidden;
+    }
+    details[open]::details-content { block-size: auto; opacity: 1; }
+
+    [popover] {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px; max-width: 320px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2); color: var(--text);
+    }
+    [popover]::backdrop { background: rgba(0,0,0,0.3); }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <!-- MENU -->
+  <div class="viz-menu">
+    <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
+      </svg>
+    </button>
+    <div class="viz-menu-dropdown" id="vizMenuDropdown">
+      <button onclick="cycleTheme()"><span id="themeIcon">🌙</span><span id="themeLabel">Dark</span></button>
+      <button onclick="downloadImage()"><span>📥</span><span>Download PNG</span></button>
+      <button onclick="window.print()"><span>🖨️</span><span>Print / PDF</span></button>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progressBar" style="width: 12.5%"></div>
+
+  <main id="main-content" role="main">
+    <div class="slides-wrapper">
+      <div class="slides-track" id="slidesTrack">
+
+        <!-- SLIDE 1: Title -->
+        <section class="slide slide-title-bg" aria-label="Title slide">
+          <div class="slide-inner">
+            <div class="date-label animate">2026. 04. 04 (토)</div>
+            <h1 class="animate delay-1" style="font-size: clamp(2.5rem, 6vw, 3.8rem);">완벽한 하루 데이트</h1>
+            <p class="subtitle animate delay-2">귀멸의 칼날 무한성편부터 로맨틱 디너까지,<br>함께하는 특별한 토요일 플랜</p>
+            <div class="animate delay-3" style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:8px;">
+              <span class="tag tag-accent">영화</span>
+              <span class="tag tag-accent">맛집</span>
+              <span class="tag tag-accent">카페</span>
+              <span class="tag tag-accent">산책</span>
+            </div>
+            <div class="animate delay-4" style="margin-top:16px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.5" style="animation: pulse 2s ease infinite; opacity:0.4;">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Overview -->
+        <section class="slide slide-content-bg" aria-label="Schedule overview">
+          <div class="slide-inner">
+            <h2 class="animate">오늘의 일정 한눈에</h2>
+            <p class="text-secondary animate delay-1" style="font-size:1rem;">AM 09:40 ~ PM 09:00</p>
+            <div style="width:100%; max-width:640px;">
+              <div class="summary-row animate delay-1">
+                <span class="summary-time">09:40</span>
+                <span class="summary-label">귀멸의 칼날 무한성편 관람</span>
+                <span class="summary-icon">🎬</span>
+              </div>
+              <div class="summary-row animate delay-2">
+                <span class="summary-time">12:00</span>
+                <span class="summary-label">점심 맛집 탐방</span>
+                <span class="summary-icon">🍽️</span>
+              </div>
+              <div class="summary-row animate delay-3">
+                <span class="summary-time">13:30</span>
+                <span class="summary-label">디저트 카페 타임</span>
+                <span class="summary-icon">☕</span>
+              </div>
+              <div class="summary-row animate delay-4">
+                <span class="summary-time">15:00</span>
+                <span class="summary-label">공원 산책 &amp; 포토타임</span>
+                <span class="summary-icon">🌸</span>
+              </div>
+              <div class="summary-row animate delay-5">
+                <span class="summary-time">17:00</span>
+                <span class="summary-label">쇼핑 &amp; 자유시간</span>
+                <span class="summary-icon">🛍️</span>
+              </div>
+              <div class="summary-row animate delay-6">
+                <span class="summary-time">18:30</span>
+                <span class="summary-label">로맨틱 저녁 디너</span>
+                <span class="summary-icon">🥂</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: Movie -->
+        <section class="slide slide-section-bg" aria-label="Movie">
+          <div class="slide-inner">
+            <div class="time-badge animate">
+              <span class="time">09:40</span>
+              <span>~</span>
+              <span>12:00</span>
+            </div>
+            <div class="timeline-item animate delay-1">
+              <div class="icon-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+                  <line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/>
+                  <line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/>
+                  <line x1="17" y1="7" x2="22" y2="7"/>
+                </svg>
+              </div>
+              <div class="timeline-content">
+                <h2 style="font-size:2rem; margin-bottom:12px;">귀멸의 칼날<br>무한성편</h2>
+                <p>오전 9시 40분 상영 시작! 미리 도착해서<br>팝콘과 음료를 준비하고 여유롭게 입장해요.</p>
+              </div>
+            </div>
+            <div class="grid-2 animate delay-2">
+              <div class="tip-card">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <p><strong>09:20</strong>까지 영화관 도착<br>좌석 확인 + 매점 이용</p>
+              </div>
+              <div class="tip-card">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <p>커플석 또는 나란히 앉기<br>담요 서비스 확인!</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Lunch -->
+        <section class="slide slide-content-bg" aria-label="Lunch">
+          <div class="slide-inner">
+            <div class="time-badge animate">
+              <span class="time">12:00</span>
+              <span>~</span>
+              <span>13:30</span>
+            </div>
+            <div class="timeline-item animate delay-1">
+              <div class="icon-circle" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                  <line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+                </svg>
+              </div>
+              <div class="timeline-content">
+                <h2 style="font-size:2rem; margin-bottom:12px;">점심 맛집 탐방</h2>
+                <p>영화 끝나고 출출한 타이밍!<br>영화관 근처 맛집에서 든든하게 식사해요.</p>
+              </div>
+            </div>
+            <div class="grid-2 animate delay-2">
+              <div class="card" style="text-align:left;">
+                <h3 style="font-size:1.2rem; margin-bottom:8px;">추천 메뉴 A</h3>
+                <p style="color:var(--text-secondary); font-size:0.9rem;">파스타 / 리조또<br>분위기 좋은 이탈리안 레스토랑</p>
+              </div>
+              <div class="card" style="text-align:left;">
+                <h3 style="font-size:1.2rem; margin-bottom:8px;">추천 메뉴 B</h3>
+                <p style="color:var(--text-secondary); font-size:0.9rem;">돈카츠 / 라멘<br>영화 테마에 맞춘 일식당</p>
+              </div>
+            </div>
+            <div class="tip-card animate delay-3" style="max-width:640px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              <p>귀멸의 칼날 관람 기념! 일식 레스토랑에서 분위기를 이어가는 것도 좋은 선택이에요.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Cafe -->
+        <section class="slide slide-section-bg" aria-label="Cafe">
+          <div class="slide-inner">
+            <div class="time-badge animate">
+              <span class="time">13:30</span>
+              <span>~</span>
+              <span>15:00</span>
+            </div>
+            <div class="timeline-item animate delay-1">
+              <div class="icon-circle" style="background: linear-gradient(135deg, #8b5cf6, #06b6d4);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                </svg>
+              </div>
+              <div class="timeline-content">
+                <h2 style="font-size:2rem; margin-bottom:12px;">디저트 카페 타임</h2>
+                <p>영화 리뷰하며 달달한 디저트와 함께<br>여유로운 시간을 보내요.</p>
+              </div>
+            </div>
+            <div class="grid-2 animate delay-2">
+              <div class="card" style="text-align:left;">
+                <h3 style="font-size:1.2rem; margin-bottom:8px;">추천 메뉴</h3>
+                <p style="color:var(--text-secondary); font-size:0.9rem;">케이크 + 라떼 세트<br>수플레 팬케이크<br>크로플 + 아이스크림</p>
+              </div>
+              <div class="card" style="text-align:left;">
+                <h3 style="font-size:1.2rem; margin-bottom:8px;">카페 선택 팁</h3>
+                <p style="color:var(--text-secondary); font-size:0.9rem;">사진 찍기 좋은 인테리어<br>좌석 간격 넓은 곳<br>창가석 예약 추천</p>
+              </div>
+            </div>
+            <div class="tip-card animate delay-3" style="max-width:640px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <p>분위기 좋은 카페에서 커플 사진도 남겨보세요!</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Walk -->
+        <section class="slide slide-content-bg" aria-label="Walk">
+          <div class="slide-inner">
+            <div class="time-badge animate">
+              <span class="time">15:00</span>
+              <span>~</span>
+              <span>17:00</span>
+            </div>
+            <div class="timeline-item animate delay-1">
+              <div class="icon-circle" style="background: linear-gradient(135deg, #10b981, #34d399);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <div class="timeline-content">
+                <h2 style="font-size:2rem; margin-bottom:12px;">공원 산책 &amp; 포토타임</h2>
+                <p>4월 초, 벚꽃이 피기 시작하는 시기!<br>가까운 공원에서 산책하며 봄을 만끽해요.</p>
+              </div>
+            </div>
+            <div class="grid-2 animate delay-2">
+              <div class="card" style="text-align:left;">
+                <h3 style="font-size:1.2rem; margin-bottom:8px;">산책 코스</h3>
+                <p style="color:var(--text-secondary); font-size:0.9rem;">벚꽃길 따라 걷기<br>벤치에서 간식 나눠먹기<br>인생샷 남기기</p>
+              </div>
+              <div class="card" style="text-align:left;">
+                <h3 style="font-size:1.2rem; margin-bottom:8px;">준비물</h3>
+                <p style="color:var(--text-secondary); font-size:0.9rem;">보조배터리 (사진 많이!)<br>돗자리 (잔디에 앉기용)<br>편한 신발 필수</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Shopping + Dinner -->
+        <section class="slide slide-section-bg" aria-label="Shopping and Dinner">
+          <div class="slide-inner">
+            <div class="time-badge animate">
+              <span class="time">17:00</span>
+              <span>~</span>
+              <span>20:30</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:28px; width:100%; max-width:640px;">
+              <div class="timeline-item animate delay-1">
+                <div class="icon-circle" style="background: linear-gradient(135deg, #ec4899, #f97316);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <h3 style="font-size:1.5rem;">17:00 쇼핑 타임</h3>
+                  <p>함께 윈도우 쇼핑하며 선물도 골라봐요.<br>커플 아이템 구경하는 재미!</p>
+                </div>
+              </div>
+              <div class="timeline-item animate delay-2">
+                <div class="icon-circle" style="background: linear-gradient(135deg, #f43f5e, #a855f7);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="1" x2="8" y2="4"/><line x1="16" y1="1" x2="16" y2="4"/>
+                    <path d="M4 11h16"/><rect x="2" y="4" width="20" height="18" rx="2"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <h3 style="font-size:1.5rem;">18:30 로맨틱 디너</h3>
+                  <p>하루의 마무리는 분위기 좋은 레스토랑에서!<br>조용하고 아늑한 곳에서 특별한 저녁을.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tip-card animate delay-3" style="max-width:640px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <p>디너 레스토랑은 미리 예약 필수! 창가석이나 프라이빗 룸을 추천해요.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: Closing -->
+        <section class="slide slide-title-bg" aria-label="Closing slide">
+          <div class="slide-inner">
+            <div class="animate" style="font-size:3.5rem; line-height:1;">💖</div>
+            <h2 class="animate delay-1" style="font-size:clamp(2rem, 5vw, 2.8rem);">완벽한 하루의 시작</h2>
+            <p class="subtitle animate delay-2">소중한 사람과 함께하는 모든 순간이<br>가장 특별한 데이트가 됩니다.</p>
+            <div class="animate delay-3" style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+              <span class="tag">09:40 영화</span>
+              <span class="tag">12:00 점심</span>
+              <span class="tag">13:30 카페</span>
+              <span class="tag">15:00 산책</span>
+              <span class="tag">17:00 쇼핑</span>
+              <span class="tag">18:30 디너</span>
+            </div>
+            <p class="text-secondary animate delay-4" style="font-size:0.9rem; margin-top:8px;">2026. 04. 04 토요일</p>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Nav -->
+  <nav class="slide-nav" aria-label="Slide navigation">
+    <button onclick="prevSlide()" aria-label="Previous slide">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="slide-counter" id="slideCounter">1 / 8</span>
+    <button onclick="nextSlide()" aria-label="Next slide">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </nav>
+
+  <script>
+    // === Menu ===
+    function toggleMenu() {
+      var dropdown = document.getElementById('vizMenuDropdown');
+      if (dropdown) dropdown.classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.viz-menu')) {
+        var dropdown = document.getElementById('vizMenuDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+      }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var dropdown = document.getElementById('vizMenuDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+      }
+    });
+
+    // === Safe localStorage ===
+    function safeGetItem(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
+    function safeSetItem(key, value) { try { localStorage.setItem(key, value); } catch(e) {} }
+
+    // === Theme ===
+    var savedTheme = safeGetItem('viz-theme');
+    var currentTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    function applyTheme(t) {
+      document.documentElement.className = 'theme-' + t;
+      document.getElementById('themeIcon').textContent = t === 'dark' ? '🌙' : '☀️';
+      document.getElementById('themeLabel').textContent = t === 'dark' ? 'Dark' : 'Light';
+      safeSetItem('viz-theme', t);
+      currentTheme = t;
+      if (typeof onThemeChange === 'function') onThemeChange();
+    }
+    function cycleTheme() { applyTheme(currentTheme === 'dark' ? 'light' : 'dark'); }
+    applyTheme(currentTheme);
+
+    // === Slides ===
+    var currentSlide = 0;
+    var totalSlides = document.querySelectorAll('.slide').length;
+    var slidesTrack = document.getElementById('slidesTrack');
+
+    function goToSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= totalSlides) index = totalSlides - 1;
+      currentSlide = index;
+      slidesTrack.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+      document.getElementById('slideCounter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
+      document.getElementById('progressBar').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+
+      // Trigger entrance animations on current slide
+      var slides = document.querySelectorAll('.slide');
+      var current = slides[currentSlide];
+      if (current) {
+        current.querySelectorAll('.animate').forEach(function(el) {
+          el.style.animationPlayState = 'running';
+        });
+        // Re-trigger counters
+        current.querySelectorAll('[data-count]').forEach(function(el) {
+          el.dataset.counted = '';
+        });
+        setTimeout(function() { animateCounters(); }, 500);
+      }
+    }
+
+    function nextSlide() { goToSlide(currentSlide + 1); }
+    function prevSlide() { goToSlide(currentSlide - 1); }
+
+    // Keyboard nav - FIX #3: Only arrow keys, no space/enter
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+    });
+
+    // Touch nav - FIX #7
+    var touchStartX = 0, touchStartY = 0, touchMoved = false;
+    document.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+      touchMoved = false;
+    }, { passive: true });
+    document.addEventListener('touchmove', function() {
+      touchMoved = true;
+    }, { passive: true });
+    document.addEventListener('touchend', function(e) {
+      var diffX = touchStartX - e.changedTouches[0].screenX;
+      var diffY = touchStartY - e.changedTouches[0].screenY;
+      if (Math.abs(diffX) > 80 && Math.abs(diffX) > Math.abs(diffY) * 2) {
+        if (diffX > 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+
+    // Click nav - FIX #6
+    document.querySelector('.slides-wrapper').addEventListener('click', function(e) {
+      if (touchMoved) { touchMoved = false; return; }
+      if (e.target.closest('a, button, input, select, textarea, details, summary, .card, .tip-card, [onclick], [popover], [popovertarget]')) return;
+      var selection = window.getSelection();
+      if (selection && selection.toString().length > 0) return;
+      var rect = this.getBoundingClientRect();
+      var clickX = (e.clientX - rect.left) / rect.width;
+      if (clickX < 0.33) prevSlide();
+      else if (clickX > 0.67) nextSlide();
+    });
+
+    // === Scroll Reveal ===
+    document.querySelectorAll('[data-reveal]').forEach(function(el) { el.classList.add('reveal'); });
+    var revealObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.observe(el); });
+
+    // === Number Counter ===
+    function animateCounters() {
+      document.querySelectorAll('[data-count]').forEach(function(el) {
+        if (el.dataset.counted) return;
+        el.dataset.counted = '1';
+        var target = parseFloat(el.dataset.count), prefix = el.dataset.prefix || '', suffix = el.dataset.suffix || '';
+        var start = performance.now(), duration = 1200;
+        (function tick(now) {
+          var p = Math.min((now - start) / duration, 1), eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        })(start);
+      });
+    }
+
+    // === Download PNG ===
+    async function downloadImage() {
+      var menu = document.querySelector('.viz-menu');
+      menu.style.display = 'none';
+      try {
+        var url = await htmlToImage.toPng(document.body, { quality: 1, pixelRatio: 2, filter: function(n) { return !n.classList || !n.classList.contains('viz-menu'); } });
+        var a = document.createElement('a'); a.href = url;
+        a.download = document.title.replace(/\s+/g, '-').toLowerCase() + '.png'; a.click();
+      } catch(e) { console.error('Download failed:', e); }
+      menu.style.display = '';
+    }
+
+    function onThemeChange() {}
+
+    // Init
+    goToSlide(0);
+  </script>
+</body>
+</html>
