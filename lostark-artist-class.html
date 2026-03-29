@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="ko" class="theme-dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로스트아크 도화가 클래스 소개</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { interpolate-size: allow-keywords; }
+
+    html.theme-dark {
+      --bg: #0A0A0A; --surface: #141414; --surface-hover: #1C1C1C;
+      --border: rgba(255,255,255,0.04);
+      --text: #EDEDED; --text-secondary: #888;
+      --accent: #c084fc; --accent-secondary: #818cf8;
+      --positive: #10b981; --negative: #f43f5e; --warning: #f59e0b;
+      --slide-gradient-1: linear-gradient(135deg, #1a0a2e 0%, #2d1b69 40%, #1a1a3e 100%);
+      --slide-gradient-2: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #172554 100%);
+      --slide-gradient-3: linear-gradient(135deg, #1a0a2e 0%, #3b1d6e 50%, #1e3a5f 100%);
+      --card-glass: rgba(255,255,255,0.04);
+      --card-glass-border: rgba(255,255,255,0.08);
+    }
+    html.theme-light {
+      --bg: #FAFAF9; --surface: #FFFFFF; --surface-hover: #F5F5F4;
+      --border: rgba(0,0,0,0.06);
+      --text: #0f172a; --text-secondary: #64748b;
+      --accent: #9333ea; --accent-secondary: #6366f1;
+      --positive: #059669; --negative: #e11d48; --warning: #d97706;
+      --slide-gradient-1: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 40%, #ede9fe 100%);
+      --slide-gradient-2: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #dbeafe 100%);
+      --slide-gradient-3: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 50%, #dbeafe 100%);
+      --card-glass: rgba(0,0,0,0.02);
+      --card-glass-border: rgba(0,0,0,0.06);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.6; -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.01em;
+      transition: background 0.3s, color 0.3s;
+      overflow: hidden; height: 100vh; width: 100vw;
+    }
+    h1,h2,h3,h4,h5,h6 {
+      color: var(--text);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      text-wrap: balance;
+    }
+    h1 { font-weight: 800; font-size: clamp(2.5rem, 6vw, 3.5rem); }
+    h2 { font-weight: 700; font-size: clamp(2rem, 5vw, 2.8rem); }
+    h3 { font-weight: 600; font-size: clamp(1.5rem, 3vw, 1.8rem); }
+    p, li, span, label { color: var(--text); font-weight: 400; }
+    .text-secondary { color: var(--text-secondary); }
+
+    /* ===== SLIDE ENGINE ===== */
+    .slide-deck {
+      width: 100vw; height: 100vh;
+      position: relative; overflow: hidden;
+    }
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 80px;
+      opacity: 0;
+      visibility: hidden;
+      transition: none;
+      will-change: transform, opacity;
+    }
+    .slide.active {
+      opacity: 1; visibility: visible;
+      z-index: 2;
+    }
+    .slide.entering-next {
+      animation: slideEnterFromRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      visibility: visible; z-index: 3;
+    }
+    .slide.leaving-prev {
+      animation: slideLeaveToLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      visibility: visible; z-index: 1;
+    }
+    .slide.entering-prev {
+      animation: slideEnterFromLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      visibility: visible; z-index: 3;
+    }
+    .slide.leaving-next {
+      animation: slideLeaveToRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      visibility: visible; z-index: 1;
+    }
+
+    @keyframes slideEnterFromRight {
+      from { opacity: 0; transform: translateX(60px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideLeaveToLeft {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(-60px); }
+    }
+    @keyframes slideEnterFromLeft {
+      from { opacity: 0; transform: translateX(-60px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideLeaveToRight {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(60px); }
+    }
+
+    /* Slide content entrance animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes brushStroke {
+      from { clip-path: inset(0 100% 0 0); }
+      to { clip-path: inset(0 0 0 0); }
+    }
+    @keyframes inkDrop {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.15); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes floatUp {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+    }
+    @keyframes drawLine {
+      from { stroke-dashoffset: 300; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    .slide.active .anim-fade { animation: fadeInUp 0.6s ease-out both; }
+    .slide.active .anim-fade.d1 { animation-delay: 0.15s; }
+    .slide.active .anim-fade.d2 { animation-delay: 0.3s; }
+    .slide.active .anim-fade.d3 { animation-delay: 0.45s; }
+    .slide.active .anim-fade.d4 { animation-delay: 0.6s; }
+    .slide.active .anim-fade.d5 { animation-delay: 0.75s; }
+    .slide.active .anim-fade.d6 { animation-delay: 0.9s; }
+
+    .slide.active .anim-scale { animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .slide.active .anim-scale.d1 { animation-delay: 0.15s; }
+    .slide.active .anim-scale.d2 { animation-delay: 0.3s; }
+    .slide.active .anim-scale.d3 { animation-delay: 0.45s; }
+    .slide.active .anim-scale.d4 { animation-delay: 0.6s; }
+
+    .slide.active .anim-left { animation: slideInLeft 0.6s ease-out both; }
+    .slide.active .anim-left.d1 { animation-delay: 0.15s; }
+    .slide.active .anim-left.d2 { animation-delay: 0.3s; }
+
+    .slide.active .anim-right { animation: slideInRight 0.6s ease-out both; }
+    .slide.active .anim-right.d1 { animation-delay: 0.15s; }
+    .slide.active .anim-right.d2 { animation-delay: 0.3s; }
+
+    .slide.active .anim-brush { animation: brushStroke 0.8s ease-out both; }
+    .slide.active .anim-brush.d1 { animation-delay: 0.2s; }
+    .slide.active .anim-brush.d2 { animation-delay: 0.4s; }
+
+    .slide.active .anim-ink { animation: inkDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .slide.active .anim-ink.d1 { animation-delay: 0.2s; }
+    .slide.active .anim-ink.d2 { animation-delay: 0.35s; }
+    .slide.active .anim-ink.d3 { animation-delay: 0.5s; }
+    .slide.active .anim-ink.d4 { animation-delay: 0.65s; }
+
+    /* Reset animations when not active */
+    .slide:not(.active):not(.entering-next):not(.entering-prev) .anim-fade,
+    .slide:not(.active):not(.entering-next):not(.entering-prev) .anim-scale,
+    .slide:not(.active):not(.entering-next):not(.entering-prev) .anim-left,
+    .slide:not(.active):not(.entering-next):not(.entering-prev) .anim-right,
+    .slide:not(.active):not(.entering-next):not(.entering-prev) .anim-brush,
+    .slide:not(.active):not(.entering-next):not(.entering-prev) .anim-ink {
+      animation: none; opacity: 0;
+    }
+
+    /* ===== SLIDE BACKGROUNDS ===== */
+    .slide-title-bg { background: var(--slide-gradient-1); }
+    .slide-content-bg { background: var(--bg); }
+    .slide-accent-bg { background: var(--slide-gradient-2); }
+    .slide-special-bg { background: var(--slide-gradient-3); }
+
+    /* Atmosphere */
+    .slide::before {
+      content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background: radial-gradient(ellipse 70% 50% at 50% 30%,
+        color-mix(in srgb, var(--accent), transparent 90%), transparent);
+    }
+    .slide > * { position: relative; z-index: 1; }
+
+    /* ===== CONTENT STYLES ===== */
+    .slide-label {
+      font-size: 0.875rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px;
+    }
+    .slide-subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      color: var(--text-secondary); font-weight: 400;
+      max-width: 600px; text-align: center;
+      line-height: 1.7;
+    }
+
+    .glass-card {
+      background: var(--card-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-glass-border);
+      border-radius: 16px; padding: 32px;
+      transition: box-shadow 0.2s ease;
+    }
+    .glass-card:hover {
+      box-shadow: 0 0 0 1px var(--card-glass-border), 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px; width: 100%; max-width: 900px;
+    }
+    .stat-card {
+      background: var(--card-glass);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-glass-border);
+      border-radius: 12px; padding: 24px;
+      text-align: center;
+      transition: box-shadow 0.2s ease;
+    }
+    .stat-card:hover {
+      box-shadow: 0 0 0 1px var(--card-glass-border), 0 8px 16px rgba(0,0,0,0.12);
+    }
+    .stat-value {
+      font-size: 2.5rem; font-weight: 800;
+      color: var(--accent); line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 0.9rem; color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .skill-list {
+      display: flex; flex-direction: column; gap: 16px;
+      width: 100%; max-width: 800px;
+    }
+    .skill-item {
+      display: flex; align-items: center; gap: 20px;
+      background: var(--card-glass);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-glass-border);
+      border-radius: 12px; padding: 20px 24px;
+      transition: box-shadow 0.2s ease;
+    }
+    .skill-item:hover {
+      box-shadow: 0 0 0 1px var(--card-glass-border), 0 8px 16px rgba(0,0,0,0.12);
+    }
+    .skill-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: color-mix(in srgb, var(--accent), transparent 80%);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .skill-icon svg { width: 24px; height: 24px; color: var(--accent); }
+    .skill-name {
+      font-size: 1.1rem; font-weight: 600; margin-bottom: 2px;
+    }
+    .skill-desc {
+      font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;
+    }
+
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 32px; width: 100%; max-width: 900px;
+    }
+
+    .engraving-card {
+      background: var(--card-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-glass-border);
+      border-radius: 16px; padding: 32px;
+      display: flex; flex-direction: column; gap: 16px;
+      transition: box-shadow 0.2s ease;
+    }
+    .engraving-card:hover {
+      box-shadow: 0 0 0 1px var(--card-glass-border), 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .engraving-title {
+      font-size: 1.5rem; font-weight: 700;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .engraving-badge {
+      font-size: 0.75rem; font-weight: 600;
+      padding: 4px 10px; border-radius: 6px;
+      letter-spacing: 0.04em;
+    }
+    .badge-support { background: color-mix(in srgb, var(--positive), transparent 80%); color: var(--positive); }
+    .badge-dps { background: color-mix(in srgb, var(--negative), transparent 80%); color: var(--negative); }
+
+    .tag-row {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    }
+    .tag {
+      font-size: 0.85rem; font-weight: 500;
+      padding: 6px 14px; border-radius: 20px;
+      background: color-mix(in srgb, var(--accent), transparent 85%);
+      color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent), transparent 70%);
+    }
+
+    /* Brush decoration */
+    .brush-decor {
+      position: absolute; pointer-events: none; z-index: 0;
+    }
+    .brush-decor svg { opacity: 0.06; }
+
+    /* Identity gauge */
+    .identity-bar {
+      width: 100%; max-width: 600px; height: 12px;
+      background: var(--card-glass); border-radius: 6px;
+      overflow: hidden; margin-top: 16px;
+      border: 1px solid var(--card-glass-border);
+    }
+    .identity-fill {
+      height: 100%; border-radius: 6px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+      width: 0%;
+      transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .slide.active .identity-fill { width: 75%; }
+
+    /* Float animation for decorative elements */
+    .float { animation: floatUp 4s ease-in-out infinite; }
+    .float-delay { animation: floatUp 4s ease-in-out infinite; animation-delay: -2s; }
+
+    /* Ink splatter decoration */
+    .ink-splatter {
+      position: absolute; pointer-events: none; z-index: 0;
+      opacity: 0.05;
+    }
+
+    /* Progress bar for slides */
+    .slide-progress {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+      z-index: 9998; transition: width 0.4s ease;
+    }
+
+    /* ===== NAVIGATION ===== */
+    .slide-nav {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 12px; z-index: 9998;
+      background: var(--card-glass); backdrop-filter: blur(16px);
+      border: 1px solid var(--card-glass-border);
+      border-radius: 40px; padding: 8px 20px;
+    }
+    .slide-nav button {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: transparent; border: none;
+      color: var(--text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .slide-nav button:hover {
+      background: var(--surface-hover); color: var(--text);
+    }
+    .slide-counter {
+      font-size: 0.85rem; color: var(--text-secondary);
+      font-weight: 500; min-width: 50px; text-align: center;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ===== MENU ===== */
+    .viz-menu { position: fixed; top: 16px; right: 16px; z-index: 9999; }
+    .viz-menu-toggle {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--card-glass); border: 1px solid var(--card-glass-border);
+      color: var(--text); cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(12px); transition: all 0.2s;
+    }
+    .viz-menu-toggle:hover { background: var(--surface-hover); }
+    .viz-menu-dropdown {
+      position: absolute; top: 52px; right: 0; min-width: 200px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px;
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: all 0.2s; backdrop-filter: blur(16px);
+    }
+    .viz-menu-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    .viz-menu-dropdown button {
+      width: 100%; padding: 10px 14px; border: none; border-radius: 8px;
+      background: transparent; color: var(--text); font-size: 14px;
+      font-family: inherit; cursor: pointer; text-align: left;
+      display: flex; align-items: center; gap: 10px; transition: background 0.15s;
+    }
+    .viz-menu-dropdown button:hover { background: var(--surface-hover); }
+
+    /* ===== ACCESSIBILITY ===== */
+    .skip-link {
+      position: absolute; left: -9999px; top: auto;
+      width: 1px; height: 1px; overflow: hidden;
+      z-index: 10000; padding: 8px 16px;
+      background: var(--accent); color: white;
+      text-decoration: none; border-radius: 4px;
+    }
+    .skip-link:focus {
+      position: fixed; left: 16px; top: 16px;
+      width: auto; height: auto; overflow: visible;
+    }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+    }
+    *:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px; border-radius: 4px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .slide { padding: 40px 24px; }
+      .two-col { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      h1 { font-size: 2.2rem; }
+      h2 { font-size: 1.8rem; }
+    }
+    @media (max-width: 375px) {
+      body { overflow-x: hidden; }
+      .slide { padding: 32px 16px; }
+      .stat-grid { grid-template-columns: 1fr; }
+      .stat-value { font-size: 2rem; }
+      .glass-card { padding: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .slide.active { opacity: 1; }
+    }
+
+    @media print {
+      body { overflow: visible; height: auto; background: white !important; color: black !important; }
+      .viz-menu, .slide-nav, .slide-progress { display: none !important; }
+      .slide { position: relative; opacity: 1 !important; visibility: visible !important;
+        page-break-after: always; min-height: 100vh; }
+      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+    @page { margin: 0.5in; }
+
+    /* Title slide special */
+    .title-hero { text-align: center; max-width: 800px; }
+    .title-hero h1 {
+      font-size: clamp(3rem, 7vw, 4.5rem);
+      font-weight: 900; margin-bottom: 20px;
+    }
+    .title-accent {
+      color: var(--accent);
+    }
+    .title-divider {
+      width: 80px; height: 3px; margin: 24px auto;
+      background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+      border-radius: 2px;
+    }
+
+    /* Section divider slide */
+    .section-divider {
+      text-align: center;
+    }
+    .section-divider h2 {
+      font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 800;
+    }
+    .section-number {
+      font-size: 6rem; font-weight: 900; line-height: 1;
+      color: color-mix(in srgb, var(--accent), transparent 70%);
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 16px;
+    }
+
+    /* Tip card */
+    .tip-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; width: 100%; max-width: 900px;
+    }
+    .tip-card {
+      background: var(--card-glass);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-glass-border);
+      border-radius: 12px; padding: 24px;
+      transition: box-shadow 0.2s ease;
+    }
+    .tip-card:hover {
+      box-shadow: 0 0 0 1px var(--card-glass-border), 0 8px 16px rgba(0,0,0,0.12);
+    }
+    .tip-number {
+      font-size: 2rem; font-weight: 800;
+      color: var(--accent); font-family: 'Inter', sans-serif;
+      margin-bottom: 8px;
+    }
+    .tip-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
+    .tip-desc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; }
+
+    /* Identity visual */
+    .identity-visual {
+      display: flex; align-items: center; gap: 32px;
+      width: 100%; max-width: 800px;
+    }
+    .identity-icon-large {
+      width: 120px; height: 120px; border-radius: 24px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .identity-icon-large svg { width: 56px; height: 56px; color: white; }
+    .identity-info { flex: 1; }
+
+    /* Synergy row */
+    .synergy-row {
+      display: flex; flex-wrap: wrap; gap: 20px;
+      justify-content: center; width: 100%; max-width: 900px;
+    }
+    .synergy-item {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      background: var(--card-glass); backdrop-filter: blur(8px);
+      border: 1px solid var(--card-glass-border);
+      border-radius: 16px; padding: 24px 20px;
+      min-width: 140px; flex: 1;
+      transition: box-shadow 0.2s ease;
+    }
+    .synergy-item:hover {
+      box-shadow: 0 0 0 1px var(--card-glass-border), 0 8px 16px rgba(0,0,0,0.12);
+    }
+    .synergy-icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .synergy-icon svg { width: 28px; height: 28px; }
+    .synergy-name { font-size: 1rem; font-weight: 600; text-align: center; }
+    .synergy-detail { font-size: 0.85rem; color: var(--text-secondary); text-align: center; }
+
+    /* Closing slide */
+    .closing-text {
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      color: var(--text-secondary); text-align: center;
+      max-width: 600px; line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link" onfocus="this.style.cssText='position:fixed;left:16px;top:16px;z-index:10000;padding:8px 16px;background:var(--accent);color:white;text-decoration:none;border-radius:4px;width:auto;height:auto;overflow:visible;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;'">Skip to content</a>
+
+  <!-- PROGRESS BAR -->
+  <div class="slide-progress" id="slideProgress" style="width: 10%;" role="progressbar" aria-label="Slide progress"></div>
+
+  <!-- MENU -->
+  <div class="viz-menu">
+    <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
+      </svg>
+    </button>
+    <div class="viz-menu-dropdown" id="vizMenuDropdown">
+      <button onclick="cycleTheme()"><span id="themeIcon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span><span id="themeLabel">Dark</span></button>
+      <button onclick="downloadImage()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Download PNG</span></button>
+      <button onclick="window.print()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg><span>Print / PDF</span></button>
+    </div>
+  </div>
+
+  <main id="main-content" role="main">
+    <div class="slide-deck">
+
+      <!-- SLIDE 1: Title -->
+      <section class="slide slide-title-bg active" aria-label="Title slide">
+        <div class="title-hero">
+          <p class="slide-label anim-fade">LOST ARK CLASS GUIDE</p>
+          <h1 class="anim-fade d1"><span class="title-accent">도화가</span></h1>
+          <div class="title-divider anim-fade d2"></div>
+          <p class="slide-subtitle anim-fade d3">붓으로 세상을 물들이는 스페셜리스트<br>서포터이자 화가, 전장의 예술가</p>
+          <div class="tag-row anim-fade d4" style="margin-top: 24px;">
+            <span class="tag">스페셜리스트</span>
+            <span class="tag">서포터</span>
+            <span class="tag">원거리</span>
+            <span class="tag">힐링</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: Overview -->
+      <section class="slide slide-content-bg" aria-label="Class overview">
+        <p class="slide-label anim-fade">OVERVIEW</p>
+        <h2 class="anim-fade d1" style="margin-bottom: 32px;">클래스 개요</h2>
+        <div class="stat-grid">
+          <div class="stat-card anim-ink d1">
+            <div class="stat-value">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;color:var(--accent)"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+            </div>
+            <div class="stat-label">무기: 붓</div>
+          </div>
+          <div class="stat-card anim-ink d2">
+            <div class="stat-value" style="font-size:1.8rem;">서포터</div>
+            <div class="stat-label">역할군</div>
+          </div>
+          <div class="stat-card anim-ink d3">
+            <div class="stat-value" style="font-size:1.8rem;">원거리</div>
+            <div class="stat-label">전투 범위</div>
+          </div>
+          <div class="stat-card anim-ink d4">
+            <div class="stat-value" style="font-size:1.8rem;">보통</div>
+            <div class="stat-label">난이도</div>
+          </div>
+        </div>
+        <p class="text-secondary anim-fade d5" style="margin-top: 24px; text-align: center; max-width: 650px; line-height: 1.7;">
+          도화가는 거대한 붓을 무기로 사용하며, 그림을 그려 아군을 치유하고 적을 공격하는 스페셜리스트 상급 직업입니다.
+        </p>
+      </section>
+
+      <!-- SLIDE 3: Identity Skill -->
+      <section class="slide slide-accent-bg" aria-label="Identity skill">
+        <p class="slide-label anim-fade">IDENTITY</p>
+        <h2 class="anim-fade d1" style="margin-bottom: 40px;">아이덴티티: 묵화</h2>
+        <div class="identity-visual anim-fade d2">
+          <div class="identity-icon-large float">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+              <path d="M2 2l7.586 7.586"/>
+              <circle cx="11" cy="11" r="2"/>
+            </svg>
+          </div>
+          <div class="identity-info">
+            <h3 style="margin-bottom: 12px;">묵화 게이지</h3>
+            <p class="text-secondary" style="line-height: 1.7; margin-bottom: 16px;">
+              스킬 적중 시 묵화 게이지가 충전됩니다. 게이지가 가득 차면
+              <strong style="color: var(--accent);">해묵도</strong>, <strong style="color: var(--accent);">흑묵도</strong>,
+              <strong style="color: var(--accent);">산수화</strong> 등 강력한 묵화 스킬을 사용할 수 있습니다.
+            </p>
+            <div class="identity-bar">
+              <div class="identity-fill"></div>
+            </div>
+            <p class="text-secondary" style="font-size: 0.85rem; margin-top: 8px;">묵화 게이지 충전 시각화</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: Class Engravings -->
+      <section class="slide slide-content-bg" aria-label="Class engravings">
+        <p class="slide-label anim-fade">ENGRAVINGS</p>
+        <h2 class="anim-fade d1" style="margin-bottom: 36px;">클래스 각인</h2>
+        <div class="two-col">
+          <div class="engraving-card anim-left d1">
+            <div class="engraving-title">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              만개
+              <span class="engraving-badge badge-support">서포터</span>
+            </div>
+            <p class="text-secondary" style="line-height: 1.7;">
+              아군의 공격력과 피해량을 증가시키는 서포터 특화 각인.
+              파티 버프와 힐링에 집중하여 안정적인 레이드 운영이 가능합니다.
+            </p>
+            <div style="margin-top: 8px;">
+              <p style="font-size: 0.9rem;"><strong>핵심:</strong> 파티원 공격력 증가, 피해 감소 버프</p>
+              <p style="font-size: 0.9rem; color: var(--text-secondary);">메인 스탯: 특화 + 신속</p>
+            </div>
+          </div>
+          <div class="engraving-card anim-right d2">
+            <div class="engraving-title">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--negative)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              회화
+              <span class="engraving-badge badge-dps">딜러</span>
+            </div>
+            <p class="text-secondary" style="line-height: 1.7;">
+              묵화 스킬의 피해량이 크게 증가하는 딜러 특화 각인.
+              독자적인 딜링을 통해 공격적인 플레이가 가능합니다.
+            </p>
+            <div style="margin-top: 8px;">
+              <p style="font-size: 0.9rem;"><strong>핵심:</strong> 묵화 스킬 피해 증가, 게이지 효율 상승</p>
+              <p style="font-size: 0.9rem; color: var(--text-secondary);">메인 스탯: 특화 + 치명</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: Key Skills -->
+      <section class="slide slide-accent-bg" aria-label="Key skills">
+        <p class="slide-label anim-fade">SKILLS</p>
+        <h2 class="anim-fade d1" style="margin-bottom: 32px;">핵심 스킬</h2>
+        <div class="skill-list">
+          <div class="skill-item anim-fade d2">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+            </div>
+            <div>
+              <div class="skill-name">해묵도 (묵화)</div>
+              <div class="skill-desc">거대한 해를 그려 넓은 범위에 피해를 입히고 아군을 회복시킵니다.</div>
+            </div>
+          </div>
+          <div class="skill-item anim-fade d3">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+            </div>
+            <div>
+              <div class="skill-name">먹구름</div>
+              <div class="skill-desc">먹구름을 소환하여 적에게 지속 피해를 주고 이동 속도를 감소시킵니다.</div>
+            </div>
+          </div>
+          <div class="skill-item anim-fade d4">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div>
+              <div class="skill-name">생명의 은혜</div>
+              <div class="skill-desc">아군에게 회복 영역을 생성하여 지속적으로 HP를 회복시킵니다.</div>
+            </div>
+          </div>
+          <div class="skill-item anim-fade d5">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div>
+              <div class="skill-name">산수화 (묵화)</div>
+              <div class="skill-desc">아름다운 산수화를 그려 파티원 전체의 공격력과 이동 속도를 증가시킵니다.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: Party Synergy -->
+      <section class="slide slide-content-bg" aria-label="Party synergy">
+        <p class="slide-label anim-fade">SYNERGY</p>
+        <h2 class="anim-fade d1" style="margin-bottom: 36px;">파티 시너지</h2>
+        <div class="synergy-row">
+          <div class="synergy-item anim-scale d1">
+            <div class="synergy-icon" style="background: color-mix(in srgb, var(--positive), transparent 80%);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="synergy-name">회복</div>
+            <div class="synergy-detail">지속적인 파티<br>HP 회복</div>
+          </div>
+          <div class="synergy-item anim-scale d2">
+            <div class="synergy-icon" style="background: color-mix(in srgb, var(--accent), transparent 80%);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div class="synergy-name">공격력 버프</div>
+            <div class="synergy-detail">아군 공격력<br>증가</div>
+          </div>
+          <div class="synergy-item anim-scale d3">
+            <div class="synergy-icon" style="background: color-mix(in srgb, var(--warning), transparent 80%);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="synergy-name">피해 감소</div>
+            <div class="synergy-detail">아군 받는 피해<br>감소</div>
+          </div>
+          <div class="synergy-item anim-scale d4">
+            <div class="synergy-icon" style="background: color-mix(in srgb, var(--accent-secondary), transparent 80%);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-secondary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="synergy-name">이동 속도</div>
+            <div class="synergy-detail">아군 이동 속도<br>증가</div>
+          </div>
+        </div>
+        <p class="text-secondary anim-fade d5" style="margin-top: 28px; text-align: center; max-width: 600px; line-height: 1.7;">
+          도화가는 바드, 홀리나이트와 함께 로스트아크의 주요 서포터로,<br>
+          독특한 묵화 시스템을 통해 차별화된 서포팅을 제공합니다.
+        </p>
+      </section>
+
+      <!-- SLIDE 7: Build Tips -->
+      <section class="slide slide-accent-bg" aria-label="Build tips">
+        <p class="slide-label anim-fade">BUILD TIPS</p>
+        <h2 class="anim-fade d1" style="margin-bottom: 32px;">운영 팁</h2>
+        <div class="tip-grid">
+          <div class="tip-card anim-fade d2">
+            <div class="tip-number">01</div>
+            <div class="tip-title">게이지 관리</div>
+            <div class="tip-desc">묵화 게이지를 효율적으로 관리하여 적절한 타이밍에 묵화 스킬을 사용하세요.</div>
+          </div>
+          <div class="tip-card anim-fade d3">
+            <div class="tip-number">02</div>
+            <div class="tip-title">위치 선정</div>
+            <div class="tip-desc">원거리 직업답게 안전한 위치에서 지속적인 서포팅을 유지하는 것이 중요합니다.</div>
+          </div>
+          <div class="tip-card anim-fade d4">
+            <div class="tip-number">03</div>
+            <div class="tip-title">스킬 순서</div>
+            <div class="tip-desc">버프 스킬을 먼저 사용하고, 딜러의 딜 타이밍에 맞춰 시너지를 극대화하세요.</div>
+          </div>
+          <div class="tip-card anim-fade d5">
+            <div class="tip-number">04</div>
+            <div class="tip-title">보석 세팅</div>
+            <div class="tip-desc">서포터 운영 시 쿨다운 보석을 우선 세팅하여 버프 유지율을 높이세요.</div>
+          </div>
+          <div class="tip-card anim-fade d6">
+            <div class="tip-number">05</div>
+            <div class="tip-title">특화 우선</div>
+            <div class="tip-desc">만개 각인 기준 특화 스탯을 우선 확보하여 버프 효과를 극대화하세요.</div>
+          </div>
+          <div class="tip-card anim-fade d6">
+            <div class="tip-number">06</div>
+            <div class="tip-title">카운터 연습</div>
+            <div class="tip-desc">도화가의 카운터 스킬은 빠르지 않으므로, 보스 패턴을 미리 숙지하세요.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: Stat Comparison -->
+      <section class="slide slide-content-bg" aria-label="Stat comparison">
+        <p class="slide-label anim-fade">STATS</p>
+        <h2 class="anim-fade d1" style="margin-bottom: 36px;">각인별 스탯 비교</h2>
+        <div class="two-col" style="max-width: 800px;">
+          <div class="glass-card anim-left d1" style="text-align: center;">
+            <h3 style="color: var(--positive); margin-bottom: 20px;">만개 (서포터)</h3>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="font-size:0.9rem; font-weight:500;">특화</span>
+                  <span style="font-size:0.9rem; color:var(--text-secondary);">최우선</span>
+                </div>
+                <div style="height:8px; background:var(--card-glass); border-radius:4px; overflow:hidden;">
+                  <div class="stat-bar-fill" data-width="95" style="height:100%; width:0%; background:var(--positive); border-radius:4px; transition: width 1.2s ease;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="font-size:0.9rem; font-weight:500;">신속</span>
+                  <span style="font-size:0.9rem; color:var(--text-secondary);">차선</span>
+                </div>
+                <div style="height:8px; background:var(--card-glass); border-radius:4px; overflow:hidden;">
+                  <div class="stat-bar-fill" data-width="70" style="height:100%; width:0%; background:var(--positive); border-radius:4px; transition: width 1.2s ease 0.2s;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="font-size:0.9rem; font-weight:500;">치명</span>
+                  <span style="font-size:0.9rem; color:var(--text-secondary);">불필요</span>
+                </div>
+                <div style="height:8px; background:var(--card-glass); border-radius:4px; overflow:hidden;">
+                  <div class="stat-bar-fill" data-width="10" style="height:100%; width:0%; background:var(--positive); border-radius:4px; transition: width 1.2s ease 0.4s;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="glass-card anim-right d2" style="text-align: center;">
+            <h3 style="color: var(--negative); margin-bottom: 20px;">회화 (딜러)</h3>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="font-size:0.9rem; font-weight:500;">특화</span>
+                  <span style="font-size:0.9rem; color:var(--text-secondary);">최우선</span>
+                </div>
+                <div style="height:8px; background:var(--card-glass); border-radius:4px; overflow:hidden;">
+                  <div class="stat-bar-fill" data-width="95" style="height:100%; width:0%; background:var(--negative); border-radius:4px; transition: width 1.2s ease;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="font-size:0.9rem; font-weight:500;">치명</span>
+                  <span style="font-size:0.9rem; color:var(--text-secondary);">차선</span>
+                </div>
+                <div style="height:8px; background:var(--card-glass); border-radius:4px; overflow:hidden;">
+                  <div class="stat-bar-fill" data-width="75" style="height:100%; width:0%; background:var(--negative); border-radius:4px; transition: width 1.2s ease 0.2s;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="font-size:0.9rem; font-weight:500;">신속</span>
+                  <span style="font-size:0.9rem; color:var(--text-secondary);">선택</span>
+                </div>
+                <div style="height:8px; background:var(--card-glass); border-radius:4px; overflow:hidden;">
+                  <div class="stat-bar-fill" data-width="40" style="height:100%; width:0%; background:var(--negative); border-radius:4px; transition: width 1.2s ease 0.4s;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: Why Artist -->
+      <section class="slide slide-special-bg" aria-label="Why choose Artist">
+        <p class="slide-label anim-fade">WHY ARTIST?</p>
+        <h2 class="anim-fade d1" style="margin-bottom: 36px;">도화가를 선택해야 하는 이유</h2>
+        <div class="stat-grid" style="max-width: 700px;">
+          <div class="glass-card anim-ink d1" style="text-align: center; padding: 28px;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom:12px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <h3 style="font-size: 1.2rem; margin-bottom: 6px;">높은 생존력</h3>
+            <p class="text-secondary" style="font-size: 0.9rem; line-height: 1.6;">자체 힐과 보호막으로 안정적인 생존이 가능합니다.</p>
+          </div>
+          <div class="glass-card anim-ink d2" style="text-align: center; padding: 28px;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom:12px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h3 style="font-size: 1.2rem; margin-bottom: 6px;">파티 필수</h3>
+            <p class="text-secondary" style="font-size: 0.9rem; line-height: 1.6;">모든 레이드에서 필요한 서포터로 구인이 수월합니다.</p>
+          </div>
+          <div class="glass-card anim-ink d3" style="text-align: center; padding: 28px;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom:12px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <h3 style="font-size: 1.2rem; margin-bottom: 6px;">유니크한 플레이</h3>
+            <p class="text-secondary" style="font-size: 0.9rem; line-height: 1.6;">다른 서포터와 차별화된 묵화 시스템으로 독보적인 재미를 줍니다.</p>
+          </div>
+          <div class="glass-card anim-ink d4" style="text-align: center; padding: 28px;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom:12px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <h3 style="font-size: 1.2rem; margin-bottom: 6px;">투자 효율</h3>
+            <p class="text-secondary" style="font-size: 0.9rem; line-height: 1.6;">서포터 특성상 낮은 투자로도 높은 기여가 가능합니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 10: Closing -->
+      <section class="slide slide-title-bg" aria-label="Closing">
+        <div class="title-hero">
+          <div class="anim-ink" style="margin-bottom: 24px;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+              <path d="M2 2l7.586 7.586"/>
+              <circle cx="11" cy="11" r="2"/>
+            </svg>
+          </div>
+          <h1 class="anim-fade d1" style="font-size: clamp(2.5rem, 6vw, 3.5rem);">
+            붓을 들고 <span class="title-accent">전장</span>으로
+          </h1>
+          <div class="title-divider anim-fade d2"></div>
+          <p class="closing-text anim-fade d3">
+            도화가와 함께라면 모든 레이드가 예술이 됩니다.
+          </p>
+          <div class="tag-row anim-fade d4" style="margin-top: 32px;">
+            <span class="tag">Lost Ark</span>
+            <span class="tag">도화가</span>
+            <span class="tag">Artist</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- NAVIGATION -->
+  <nav class="slide-nav" aria-label="Slide navigation">
+    <button onclick="prevSlide()" aria-label="Previous slide">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="slide-counter" id="slideCounter" aria-live="polite">1 / 10</span>
+    <button onclick="nextSlide()" aria-label="Next slide">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </nav>
+
+  <script>
+    // === Menu ===
+    function toggleMenu() {
+      var dropdown = document.getElementById('vizMenuDropdown');
+      if (dropdown) dropdown.classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.viz-menu')) {
+        var dropdown = document.getElementById('vizMenuDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+      }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var dropdown = document.getElementById('vizMenuDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+      }
+    });
+
+    // === Theme ===
+    var savedTheme = localStorage.getItem('viz-theme');
+    var currentTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    function applyTheme(t) {
+      document.documentElement.className = 'theme-' + t;
+      var icon = document.getElementById('themeIcon');
+      var label = document.getElementById('themeLabel');
+      if (icon) icon.innerHTML = t === 'dark'
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+      if (label) label.textContent = t === 'dark' ? 'Dark' : 'Light';
+      localStorage.setItem('viz-theme', t);
+      currentTheme = t;
+      if (typeof onThemeChange === 'function') onThemeChange();
+    }
+    function cycleTheme() { applyTheme(currentTheme === 'dark' ? 'light' : 'dark'); }
+    applyTheme(currentTheme);
+
+    // === Slide Engine (optimized for many slides) ===
+    var slides = document.querySelectorAll('.slide');
+    var currentSlide = 0;
+    var totalSlides = slides.length;
+    var isAnimating = false;
+    var ANIM_DURATION = 600;
+
+    function updateCounter() {
+      var counter = document.getElementById('slideCounter');
+      if (counter) counter.textContent = (currentSlide + 1) + ' / ' + totalSlides;
+      var progress = document.getElementById('slideProgress');
+      if (progress) progress.style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+    }
+
+    function animateStatBars(slide) {
+      var bars = slide.querySelectorAll('.stat-bar-fill');
+      bars.forEach(function(bar) {
+        var w = bar.getAttribute('data-width');
+        if (w) bar.style.width = w + '%';
+      });
+    }
+
+    function resetStatBars(slide) {
+      var bars = slide.querySelectorAll('.stat-bar-fill');
+      bars.forEach(function(bar) {
+        bar.style.width = '0%';
+      });
+    }
+
+    function goToSlide(index, direction) {
+      if (isAnimating || index === currentSlide || index < 0 || index >= totalSlides) return;
+      isAnimating = true;
+
+      var current = slides[currentSlide];
+      var next = slides[index];
+      var isForward = direction === 'next' || (direction === undefined && index > currentSlide);
+
+      // Remove active and reset animations on current slide
+      current.classList.remove('active');
+      current.classList.add(isForward ? 'leaving-prev' : 'leaving-next');
+
+      // Prepare next slide — clear any inline styles from previous transitions
+      next.style.opacity = '';
+      next.style.visibility = '';
+      next.classList.add(isForward ? 'entering-next' : 'entering-prev');
+
+      // Animate stat bars if present
+      animateStatBars(next);
+      resetStatBars(current);
+
+      currentSlide = index;
+      updateCounter();
+
+      setTimeout(function() {
+        current.classList.remove('leaving-prev', 'leaving-next', 'entering-next', 'entering-prev');
+        current.style.opacity = '0';
+        current.style.visibility = 'hidden';
+        next.classList.remove('entering-next', 'entering-prev');
+        next.classList.add('active');
+        isAnimating = false;
+      }, ANIM_DURATION);
+    }
+
+    function nextSlide() { goToSlide(currentSlide + 1, 'next'); }
+    function prevSlide() { goToSlide(currentSlide - 1, 'prev'); }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSlide(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+    });
+
+    // Touch navigation
+    var touchStartX = 0;
+    var touchEndX = 0;
+    document.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    document.addEventListener('touchend', function(e) {
+      touchEndX = e.changedTouches[0].screenX;
+      var diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+
+    // Click navigation (left third = prev, right two-thirds = next)
+    document.querySelector('.slide-deck').addEventListener('click', function(e) {
+      if (e.target.closest('.viz-menu') || e.target.closest('.slide-nav') || e.target.closest('button') || e.target.closest('a')) return;
+      var x = e.clientX / window.innerWidth;
+      if (x < 0.33) prevSlide();
+      else if (x > 0.5) nextSlide();
+    });
+
+    // Initialize first slide
+    slides[0].classList.add('active');
+    animateStatBars(slides[0]);
+    updateCounter();
+
+    // Theme change handler
+    function onThemeChange() {
+      if (!slides || !slides.length) return;
+      // Re-trigger stat bar animations on active slide
+      animateStatBars(slides[currentSlide]);
+    }
+
+    // === Download PNG ===
+    async function downloadImage() {
+      var menu = document.querySelector('.viz-menu');
+      var nav = document.querySelector('.slide-nav');
+      var progress = document.getElementById('slideProgress');
+      menu.style.display = 'none';
+      nav.style.display = 'none';
+      progress.style.display = 'none';
+      try {
+        var url = await htmlToImage.toPng(document.body, {
+          quality: 1, pixelRatio: 2,
+          filter: function(n) { return !n.classList || (!n.classList.contains('viz-menu') && !n.classList.contains('slide-nav')); }
+        });
+        var a = document.createElement('a'); a.href = url;
+        a.download = 'lostark-artist-class.png'; a.click();
+      } catch(e) { console.error('Download failed:', e); }
+      menu.style.display = '';
+      nav.style.display = '';
+      progress.style.display = '';
+    }
+  </script>
+</body>
+</html>
