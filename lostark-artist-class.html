@@ -446,6 +446,8 @@
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
       h1 { font-size: 2.2rem; }
       h2 { font-size: 1.8rem; }
+      table { font-size: 0.8rem; }
+      table th, table td { padding: 8px 6px !important; }
     }
     @media (max-width: 375px) {
       body { overflow-x: hidden; }
@@ -895,30 +897,167 @@
         </div>
       </section>
 
-      <!-- SLIDE 9: Why Artist -->
-      <section class="slide slide-special-bg" aria-label="Why choose Artist">
+      <!-- SLIDE 9: Support Comparison -->
+      <section class="slide slide-content-bg" aria-label="Support class comparison">
+        <p class="slide-label anim-fade">VS OTHER SUPPORTS</p>
+        <h2 class="anim-fade d1" style="margin-bottom: 32px;">서포터 비교</h2>
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; width:100%; max-width:960px;">
+          <!-- Header labels -->
+          <div class="anim-fade d2" style="text-align:center;">
+            <div style="width:56px;height:56px;border-radius:14px;background:color-mix(in srgb, var(--accent), transparent 80%);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+            </div>
+            <h3 style="font-size:1.15rem; margin-bottom:2px; color:var(--accent);">도화가</h3>
+            <p class="text-secondary" style="font-size:0.8rem;">스페셜리스트</p>
+          </div>
+          <div class="anim-fade d3" style="text-align:center;">
+            <div style="width:56px;height:56px;border-radius:14px;background:color-mix(in srgb, var(--warning), transparent 80%);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </div>
+            <h3 style="font-size:1.15rem; margin-bottom:2px; color:var(--warning);">바드</h3>
+            <p class="text-secondary" style="font-size:0.8rem;">마법사</p>
+          </div>
+          <div class="anim-fade d4" style="text-align:center;">
+            <div style="width:56px;height:56px;border-radius:14px;background:color-mix(in srgb, var(--accent-secondary), transparent 80%);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-secondary)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 style="font-size:1.15rem; margin-bottom:2px; color:var(--accent-secondary);">홀리나이트</h3>
+            <p class="text-secondary" style="font-size:0.8rem;">워리어</p>
+          </div>
+          <div class="anim-fade d5" style="text-align:center;">
+            <div style="width:56px;height:56px;border-radius:14px;background:color-mix(in srgb, var(--positive), transparent 80%);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15l3-3 3 3"/></svg>
+            </div>
+            <h3 style="font-size:1.15rem; margin-bottom:2px; color:var(--positive);">발키리</h3>
+            <p class="text-secondary" style="font-size:0.8rem;">워리어</p>
+          </div>
+        </div>
+        <!-- Comparison table -->
+        <div class="glass-card anim-fade d5" style="width:100%; max-width:960px; margin-top:24px; padding:0; overflow:hidden;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--card-glass-border);">
+                <th style="padding:14px 16px; text-align:left; font-weight:600; color:var(--text-secondary); font-size:0.8rem; letter-spacing:0.04em;">항목</th>
+                <th style="padding:14px 12px; text-align:center; font-weight:600; color:var(--accent);">도화가</th>
+                <th style="padding:14px 12px; text-align:center; font-weight:600; color:var(--warning);">바드</th>
+                <th style="padding:14px 12px; text-align:center; font-weight:600; color:var(--accent-secondary);">홀리나이트</th>
+                <th style="padding:14px 12px; text-align:center; font-weight:600; color:var(--positive);">발키리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--card-glass-border);">
+                <td style="padding:12px 16px; font-weight:500;">힐링</td>
+                <td style="padding:12px; text-align:center; color:var(--accent);">★★★</td>
+                <td style="padding:12px; text-align:center;">★★★</td>
+                <td style="padding:12px; text-align:center;">★★</td>
+                <td style="padding:12px; text-align:center;">★★</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--card-glass-border);">
+                <td style="padding:12px 16px; font-weight:500;">공격 버프</td>
+                <td style="padding:12px; text-align:center; color:var(--accent);">★★★</td>
+                <td style="padding:12px; text-align:center;">★★★</td>
+                <td style="padding:12px; text-align:center;">★★★</td>
+                <td style="padding:12px; text-align:center;">★★★</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--card-glass-border);">
+                <td style="padding:12px 16px; font-weight:500;">보호막</td>
+                <td style="padding:12px; text-align:center; color:var(--accent);">★★★</td>
+                <td style="padding:12px; text-align:center;">★★★</td>
+                <td style="padding:12px; text-align:center;">★★</td>
+                <td style="padding:12px; text-align:center;">★★</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--card-glass-border);">
+                <td style="padding:12px 16px; font-weight:500;">생존력</td>
+                <td style="padding:12px; text-align:center; color:var(--accent);">★★★</td>
+                <td style="padding:12px; text-align:center;">★★</td>
+                <td style="padding:12px; text-align:center;">★★★</td>
+                <td style="padding:12px; text-align:center;">★★★</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--card-glass-border);">
+                <td style="padding:12px 16px; font-weight:500;">조작 난이도</td>
+                <td style="padding:12px; text-align:center; color:var(--accent);">보통</td>
+                <td style="padding:12px; text-align:center;">어려움</td>
+                <td style="padding:12px; text-align:center;">쉬움</td>
+                <td style="padding:12px; text-align:center;">보통</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px; font-weight:500;">딜러 전환</td>
+                <td style="padding:12px; text-align:center; color:var(--accent);">가능 (회화)</td>
+                <td style="padding:12px; text-align:center;">가능 (진실)</td>
+                <td style="padding:12px; text-align:center;">가능 (심판)</td>
+                <td style="padding:12px; text-align:center;">가능</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SLIDE 10: Why Artist over others -->
+      <section class="slide slide-special-bg" aria-label="Why choose Artist over others">
         <p class="slide-label anim-fade">WHY ARTIST?</p>
-        <h2 class="anim-fade d1" style="margin-bottom: 36px;">도화가를 선택해야 하는 이유</h2>
-        <div class="stat-grid" style="max-width: 700px;">
-          <div class="glass-card anim-ink d1" style="text-align: center; padding: 28px;">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom:12px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <h3 style="font-size: 1.2rem; margin-bottom: 6px;">높은 생존력</h3>
-            <p class="text-secondary" style="font-size: 0.9rem; line-height: 1.6;">자체 힐과 보호막으로 안정적인 생존이 가능합니다.</p>
+        <h2 class="anim-fade d1" style="margin-bottom: 32px;">그래서 왜 도화가인가?</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; width:100%; max-width:900px;">
+          <div class="glass-card anim-left d1" style="padding:24px;">
+            <h3 style="font-size:1.1rem; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+              <span style="color:var(--warning);">vs 바드</span>
+            </h3>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
+              <li style="font-size:0.9rem; display:flex; gap:8px; line-height:1.6;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2" style="flex-shrink:0;margin-top:3px;"><polyline points="20 6 9 17 4 12"/></svg>
+                바드보다 높은 자체 생존력과 기동성
+              </li>
+              <li style="font-size:0.9rem; display:flex; gap:8px; line-height:1.6;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2" style="flex-shrink:0;margin-top:3px;"><polyline points="20 6 9 17 4 12"/></svg>
+                묵화 스킬로 광역 힐+딜 동시 가능
+              </li>
+              <li style="font-size:0.9rem; display:flex; gap:8px; line-height:1.6;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2" style="flex-shrink:0;margin-top:3px;"><polyline points="20 6 9 17 4 12"/></svg>
+                조작 난이도가 바드보다 낮아 입문 용이
+              </li>
+            </ul>
           </div>
-          <div class="glass-card anim-ink d2" style="text-align: center; padding: 28px;">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom:12px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <h3 style="font-size: 1.2rem; margin-bottom: 6px;">파티 필수</h3>
-            <p class="text-secondary" style="font-size: 0.9rem; line-height: 1.6;">모든 레이드에서 필요한 서포터로 구인이 수월합니다.</p>
+          <div class="glass-card anim-right d2" style="padding:24px;">
+            <h3 style="font-size:1.1rem; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+              <span style="color:var(--accent-secondary);">vs 홀리나이트</span>
+            </h3>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
+              <li style="font-size:0.9rem; display:flex; gap:8px; line-height:1.6;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2" style="flex-shrink:0;margin-top:3px;"><polyline points="20 6 9 17 4 12"/></svg>
+                원거리에서 안전하게 서포팅 가능
+              </li>
+              <li style="font-size:0.9rem; display:flex; gap:8px; line-height:1.6;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2" style="flex-shrink:0;margin-top:3px;"><polyline points="20 6 9 17 4 12"/></svg>
+                힐링 성능이 홀나보다 월등히 높음
+              </li>
+              <li style="font-size:0.9rem; display:flex; gap:8px; line-height:1.6;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2" style="flex-shrink:0;margin-top:3px;"><polyline points="20 6 9 17 4 12"/></svg>
+                보호막 성능이 뛰어나 파티 안정성 우수
+              </li>
+            </ul>
           </div>
-          <div class="glass-card anim-ink d3" style="text-align: center; padding: 28px;">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom:12px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <h3 style="font-size: 1.2rem; margin-bottom: 6px;">유니크한 플레이</h3>
-            <p class="text-secondary" style="font-size: 0.9rem; line-height: 1.6;">다른 서포터와 차별화된 묵화 시스템으로 독보적인 재미를 줍니다.</p>
+          <div class="glass-card anim-left d3" style="padding:24px;">
+            <h3 style="font-size:1.1rem; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+              <span style="color:var(--positive);">vs 발키리</span>
+            </h3>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
+              <li style="font-size:0.9rem; display:flex; gap:8px; line-height:1.6;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2" style="flex-shrink:0;margin-top:3px;"><polyline points="20 6 9 17 4 12"/></svg>
+                발키리보다 강력한 힐링과 보호막 제공
+              </li>
+              <li style="font-size:0.9rem; display:flex; gap:8px; line-height:1.6;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2" style="flex-shrink:0;margin-top:3px;"><polyline points="20 6 9 17 4 12"/></svg>
+                묵화 시스템으로 서포팅의 재미와 깊이가 다름
+              </li>
+              <li style="font-size:0.9rem; display:flex; gap:8px; line-height:1.6;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2" style="flex-shrink:0;margin-top:3px;"><polyline points="20 6 9 17 4 12"/></svg>
+                원거리 특성으로 보스 패턴 회피가 더 수월
+              </li>
+            </ul>
           </div>
-          <div class="glass-card anim-ink d4" style="text-align: center; padding: 28px;">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom:12px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <h3 style="font-size: 1.2rem; margin-bottom: 6px;">투자 효율</h3>
-            <p class="text-secondary" style="font-size: 0.9rem; line-height: 1.6;">서포터 특성상 낮은 투자로도 높은 기여가 가능합니다.</p>
+          <div class="glass-card anim-right d4" style="padding:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom:12px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <h3 style="font-size:1.1rem; margin-bottom:8px;">도화가만의 강점</h3>
+            <p class="text-secondary" style="font-size:0.9rem; line-height:1.6;">회화 각인으로 딜러 전환 시 독보적인 플레이 경험. 서포터 중 유일한 스페셜리스트 클래스로 차별화된 재미를 제공합니다.</p>
           </div>
         </div>
       </section>
@@ -957,7 +1096,7 @@
     <button onclick="prevSlide()" aria-label="Previous slide">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
-    <span class="slide-counter" id="slideCounter" aria-live="polite">1 / 10</span>
+    <span class="slide-counter" id="slideCounter" aria-live="polite">1 / 12</span>
     <button onclick="nextSlide()" aria-label="Next slide">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </button>
