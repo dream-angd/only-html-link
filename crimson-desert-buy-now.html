@@ -36,7 +36,7 @@
       background: var(--bg); color: var(--text);
       line-height: 1.6; -webkit-font-smoothing: antialiased;
       transition: background 0.3s, color 0.3s;
-      overflow: hidden; height: 100dvh; height: 100vh; width: 100vw;
+      overflow: hidden; height: 100vh; height: 100dvh; width: 100vw;
     }
     h1,h2,h3,h4,h5,h6 { color: var(--text); letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
     h1 { font-weight: 800; }
@@ -178,7 +178,7 @@
 
     /* ===== SLIDE SYSTEM ===== */
     .slides-container {
-      position: relative; width: 100vw; height: 100dvh; height: 100vh; overflow: hidden;
+      position: relative; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden;
     }
     @supports (height: 100dvh) {
       body { height: 100dvh; }
@@ -1361,7 +1361,7 @@
       var sel = window.getSelection();
       if (sel && sel.toString().length > 0) return;
       // Skip if clicking on interactive elements or card content
-      if (e.target.closest('.slide-nav') || e.target.closest('.viz-menu') || e.target.closest('button') || e.target.closest('a') || e.target.closest('.feature-card') || e.target.closest('.stat-card') || e.target.closest('.problem-item') || e.target.closest('.update-card') || e.target.closest('.reason-card') || e.target.closest('.timeline-item') || e.target.closest('.chart-container') || e.target.closest('.review-journey')) return;
+      if (e.target.closest('.slide-nav') || e.target.closest('.viz-menu') || e.target.closest('button') || e.target.closest('a') || e.target.closest('.feature-card') || e.target.closest('.stat-card') || e.target.closest('.problem-item') || e.target.closest('.update-card') || e.target.closest('.reason-card') || e.target.closest('.timeline-item') || e.target.closest('.chart-container') || e.target.closest('.review-journey') || e.target.closest('details') || e.target.closest('[onclick]') || e.target.closest('[popover]')) return;
       var x = e.clientX / window.innerWidth;
       if (x < 0.33) prevSlide();
       else if (x > 0.5) nextSlide();

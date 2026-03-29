@@ -43,7 +43,7 @@
       line-height: 1.6; -webkit-font-smoothing: antialiased;
       letter-spacing: -0.01em;
       transition: background 0.3s, color 0.3s;
-      overflow: hidden; height: 100vh; width: 100vw;
+      overflow: hidden; height: 100vh; height: 100dvh; width: 100vw;
     }
     h1,h2,h3,h4,h5,h6 {
       color: var(--text);
@@ -59,7 +59,7 @@
 
     /* ===== SLIDE ENGINE ===== */
     .slide-deck {
-      width: 100vw; height: 100vh;
+      width: 100vw; height: 100vh; height: 100dvh;
       position: relative; overflow: hidden;
     }
     .slide {
@@ -71,6 +71,7 @@
       visibility: hidden;
       transition: none;
       will-change: transform, opacity;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
     }
     .slide.active {
       opacity: 1; visibility: visible;
@@ -1121,8 +1122,12 @@
       }
     });
 
+    // === Safe localStorage (시크릿 모드 대응) ===
+    function safeGetItem(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
+    function safeSetItem(key, value) { try { localStorage.setItem(key, value); } catch(e) {} }
+
     // === Theme ===
-    var savedTheme = localStorage.getItem('viz-theme');
+    var savedTheme = safeGetItem('viz-theme');
     var currentTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
     function applyTheme(t) {
       document.documentElement.className = 'theme-' + t;
@@ -1132,7 +1137,7 @@
         ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
         : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
       if (label) label.textContent = t === 'dark' ? 'Dark' : 'Light';
-      localStorage.setItem('viz-theme', t);
+      safeSetItem('viz-theme', t);
       currentTheme = t;
       if (typeof onThemeChange === 'function') onThemeChange();
     }
@@ -1205,28 +1210,38 @@
     function nextSlide() { goToSlide(currentSlide + 1, 'next'); }
     function prevSlide() { goToSlide(currentSlide - 1, 'prev'); }
 
-    // Keyboard navigation
+    // Keyboard navigation (ArrowLeft/Right only — Space/Enter는 브라우저 기본 스크롤 유지)
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSlide(); }
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
       if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
     });
 
-    // Touch navigation
-    var touchStartX = 0;
-    var touchEndX = 0;
-    document.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    // Touch navigation (X+Y 축 추적, 견고한 스와이프 감지)
+    var touchStartX = 0, touchStartY = 0, touchMoved = false;
+    document.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+      touchMoved = false;
+    }, { passive: true });
+    document.addEventListener('touchmove', function() {
+      touchMoved = true;
+    }, { passive: true });
     document.addEventListener('touchend', function(e) {
-      touchEndX = e.changedTouches[0].screenX;
-      var diff = touchStartX - touchEndX;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) nextSlide();
+      var diffX = touchStartX - e.changedTouches[0].screenX;
+      var diffY = touchStartY - e.changedTouches[0].screenY;
+      if (Math.abs(diffX) > 80 && Math.abs(diffX) > Math.abs(diffY) * 2) {
+        if (diffX > 0) nextSlide();
         else prevSlide();
       }
     }, { passive: true });
 
-    // Click navigation (left third = prev, right two-thirds = next)
+    // Click navigation (카드/텍스트선택/터치 후 클릭 필터링)
     document.querySelector('.slide-deck').addEventListener('click', function(e) {
-      if (e.target.closest('.viz-menu') || e.target.closest('.slide-nav') || e.target.closest('button') || e.target.closest('a')) return;
+      if (touchMoved) { touchMoved = false; return; }
+      var sel = window.getSelection();
+      if (sel && sel.toString().length > 0) return;
+      if (e.target.closest('.viz-menu') || e.target.closest('.slide-nav') || e.target.closest('button') || e.target.closest('a') || e.target.closest('.glass-card') || e.target.closest('.stat-card') || e.target.closest('.skill-item') || e.target.closest('.engraving-card') || e.target.closest('.build-card') || e.target.closest('details') || e.target.closest('[onclick]') || e.target.closest('[popover]')) return;
       var x = e.clientX / window.innerWidth;
       if (x < 0.33) prevSlide();
       else if (x > 0.5) nextSlide();
