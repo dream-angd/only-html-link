@@ -36,7 +36,7 @@
       background: var(--bg); color: var(--text);
       line-height: 1.6; -webkit-font-smoothing: antialiased;
       transition: background 0.3s, color 0.3s;
-      overflow: hidden; height: 100vh; width: 100vw;
+      overflow: hidden; height: 100dvh; height: 100vh; width: 100vw;
     }
     h1,h2,h3,h4,h5,h6 { color: var(--text); letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
     h1 { font-weight: 800; }
@@ -178,7 +178,11 @@
 
     /* ===== SLIDE SYSTEM ===== */
     .slides-container {
-      position: relative; width: 100vw; height: 100vh; overflow: hidden;
+      position: relative; width: 100vw; height: 100dvh; height: 100vh; overflow: hidden;
+    }
+    @supports (height: 100dvh) {
+      body { height: 100dvh; }
+      .slides-container { height: 100dvh; }
     }
     .slide {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -722,11 +726,13 @@
       }
     }
 
-    /* Ensure overflow scroll on slides with lots of content on mobile */
+    /* Allow vertical scroll when content overflows on any screen size */
+    .slide {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
     @media (max-width: 768px) {
       .slide {
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
         justify-content: flex-start;
         padding-top: 50px;
         padding-bottom: 80px;
@@ -1225,7 +1231,8 @@
     });
 
     // === Theme ===
-    var savedTheme = localStorage.getItem('viz-theme');
+    var savedTheme;
+    try { savedTheme = localStorage.getItem('viz-theme'); } catch(e) {}
     var currentTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
     function applyTheme(t) {
       document.documentElement.className = 'theme-' + t;
@@ -1233,7 +1240,7 @@
       var label = document.getElementById('themeLabel');
       if (icon) icon.innerHTML = t === 'dark' ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
       if (label) label.textContent = t === 'dark' ? 'Dark' : 'Light';
-      localStorage.setItem('viz-theme', t);
+      try { localStorage.setItem('viz-theme', t); } catch(e) {}
       currentTheme = t;
       if (typeof onThemeChange === 'function') onThemeChange();
     }
@@ -1285,6 +1292,26 @@
           setTimeout(buildCharts, 300);
         }
 
+        // Trigger counter animations on the new slide
+        setTimeout(function() {
+          var counters = slides[newIndex].querySelectorAll('[data-count]');
+          counters.forEach(function(el) {
+            if (el.dataset.counted) return;
+            el.dataset.counted = '1';
+            var target = parseFloat(el.dataset.count);
+            var prefix = el.dataset.prefix || '';
+            var suffix = el.dataset.suffix || '';
+            var start = performance.now();
+            var duration = 1500;
+            (function tick(now) {
+              var p = Math.min((now - start) / duration, 1);
+              var eased = 1 - Math.pow(1 - p, 3);
+              el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+              if (p < 1) requestAnimationFrame(tick);
+            })(start);
+          });
+        }, 200);
+
         setTimeout(function() {
           isTransitioning = false;
           oldSlide.classList.remove('prev');
@@ -1298,28 +1325,43 @@
     function nextSlide() { updateSlide(currentSlide + 1, 'next'); }
     function prevSlide() { updateSlide(currentSlide - 1, 'prev'); }
 
-    // Keyboard nav
+    // Keyboard nav (ArrowLeft/Right only — Space/Enter reserved for scroll and accessibility)
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSlide(); }
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
       if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
     });
 
-    // Touch nav
+    // Touch nav (horizontal swipe only — ignore vertical scrolling)
     var touchStartX = 0;
-    var touchEndX = 0;
-    document.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    var touchStartY = 0;
+    var touchMoved = false;
+    document.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+      touchMoved = false;
+    }, { passive: true });
+    document.addEventListener('touchmove', function() {
+      touchMoved = true;
+    }, { passive: true });
     document.addEventListener('touchend', function(e) {
-      touchEndX = e.changedTouches[0].screenX;
-      var diff = touchStartX - touchEndX;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) nextSlide();
+      var diffX = touchStartX - e.changedTouches[0].screenX;
+      var diffY = touchStartY - e.changedTouches[0].screenY;
+      // Only trigger slide change if horizontal movement is dominant and significant
+      if (Math.abs(diffX) > 80 && Math.abs(diffX) > Math.abs(diffY) * 2) {
+        if (diffX > 0) nextSlide();
         else prevSlide();
       }
     }, { passive: true });
 
-    // Click nav (left third = prev, right two-thirds = next)
+    // Click nav (left third = prev, right two-thirds = next) — skip if touch-scrolled or text selected
     document.querySelector('.slides-container').addEventListener('click', function(e) {
-      if (e.target.closest('.slide-nav') || e.target.closest('.viz-menu') || e.target.closest('button') || e.target.closest('a')) return;
+      if (touchMoved) { touchMoved = false; return; }
+      // Skip if user selected text
+      var sel = window.getSelection();
+      if (sel && sel.toString().length > 0) return;
+      // Skip if clicking on interactive elements or card content
+      if (e.target.closest('.slide-nav') || e.target.closest('.viz-menu') || e.target.closest('button') || e.target.closest('a') || e.target.closest('.feature-card') || e.target.closest('.stat-card') || e.target.closest('.problem-item') || e.target.closest('.update-card') || e.target.closest('.reason-card') || e.target.closest('.timeline-item') || e.target.closest('.chart-container') || e.target.closest('.review-journey')) return;
       var x = e.clientX / window.innerWidth;
       if (x < 0.33) prevSlide();
       else if (x > 0.5) nextSlide();
