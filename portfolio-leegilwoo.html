@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="ko" class="theme-dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이길우 — 반도체 SW / AI 자동화 엔지니어 포트폴리오</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script>if(typeof Chart !== 'undefined') Chart.defaults.animation = false;</script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { interpolate-size: allow-keywords; }
+
+    html.theme-dark {
+      --bg: #0A0A0A; --surface: #141414; --surface-hover: #1C1C1C;
+      --border: rgba(255,255,255,0.06);
+      --text: #EDEDED; --text-secondary: #888;
+      --accent: #3b82f6; --accent-secondary: #8b5cf6;
+      --positive: #10b981; --negative: #f43f5e; --warning: #f59e0b;
+      --hero-grad-1: #0f2b5b; --hero-grad-2: #1a1060; --hero-grad-3: #0a1a3a;
+    }
+    html.theme-light {
+      --bg: #FAFAF9; --surface: #FFFFFF; --surface-hover: #F0F0EF;
+      --border: rgba(0,0,0,0.07);
+      --text: #0f172a; --text-secondary: #64748b;
+      --accent: #2563eb; --accent-secondary: #7c3aed;
+      --positive: #059669; --negative: #e11d48; --warning: #d97706;
+      --hero-grad-1: #dbeafe; --hero-grad-2: #ede9fe; --hero-grad-3: #e0f2fe;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', -apple-system, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.6; -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.01em;
+      transition: background 0.3s, color 0.3s;
+      overflow-y: auto;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--text); letter-spacing: -0.03em; line-height: 1.1;
+      text-wrap: balance;
+    }
+    h1 { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 800; }
+    h2 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 700; }
+    h3 { font-size: clamp(1.5rem, 3vw, 1.8rem); font-weight: 600; }
+
+    /* Card */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+      border-color: rgba(59,130,246,0.25);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .animate { animation: fadeInUp 0.65s cubic-bezier(0.22,1,0.36,1) both; }
+    .animate.delay-1 { animation-delay: 0.1s; }
+    .animate.delay-2 { animation-delay: 0.2s; }
+    .animate.delay-3 { animation-delay: 0.3s; }
+    .animate.delay-4 { animation-delay: 0.4s; }
+    .animate.delay-5 { animation-delay: 0.5s; }
+    .animate.delay-6 { animation-delay: 0.6s; }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+
+    /* Print */
+    @media print {
+      body { background: white !important; color: black !important; }
+      .viz-menu { display: none; }
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .card { break-inside: avoid; border: 1px solid #ddd; box-shadow: none; }
+      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+    @page { margin: 0.8in; }
+
+    /* Menu */
+    .viz-menu { position: fixed; top: 16px; right: 16px; z-index: 9999; }
+    .viz-menu-toggle {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(12px); transition: all 0.2s;
+    }
+    .viz-menu-toggle:hover { background: var(--surface-hover); }
+    .viz-menu-dropdown {
+      position: absolute; top: 52px; right: 0; min-width: 200px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px;
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: all 0.2s; backdrop-filter: blur(16px);
+    }
+    .viz-menu-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    .viz-menu-dropdown button {
+      width: 100%; padding: 10px 14px; border: none; border-radius: 8px;
+      background: transparent; color: var(--text); font-size: 14px;
+      font-family: inherit; cursor: pointer; text-align: left;
+      display: flex; align-items: center; gap: 10px; transition: background 0.15s;
+    }
+    .viz-menu-dropdown button:hover { background: var(--surface-hover); }
+
+    /* Skip to content */
+    .skip-link {
+      position: absolute; left: -9999px; top: auto; z-index: 10000;
+      padding: 8px 16px; background: var(--accent); color: white;
+      text-decoration: none; border-radius: 4px;
+    }
+    .skip-link:focus { position: fixed; left: 16px; top: 16px; }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      max-width: 1100px; margin: 0 auto; padding: 0 24px;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh; min-height: 100dvh;
+      display: flex; align-items: center;
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--hero-grad-1) 0%, var(--hero-grad-2) 50%, var(--hero-grad-3) 100%);
+      background-size: 300% 300%;
+      animation: gradientShift 12s ease infinite;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 20% 60%, rgba(59,130,246,0.12) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.1) 0%, transparent 55%);
+    }
+    .hero-inner {
+      position: relative; z-index: 1;
+      padding: 80px 0;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 100px;
+      background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3);
+      font-size: 13px; color: var(--accent); font-weight: 500;
+      margin-bottom: 24px;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); animation: pulse 2s ease-in-out infinite;
+    }
+    .hero h1 {
+      margin-bottom: 8px;
+      line-height: 1.05;
+    }
+    .hero h1 .name-ko { font-size: clamp(3rem, 8vw, 5.5rem); font-weight: 900; display: block; }
+    .hero h1 .name-title { font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 400; color: var(--text-secondary); display: block; margin-top: 12px; letter-spacing: 0.01em; }
+    .hero-desc {
+      max-width: 680px; margin: 28px 0 40px;
+      font-size: clamp(1rem, 2vw, 1.15rem); color: var(--text-secondary);
+      line-height: 1.75;
+    }
+    .hero-contact {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 48px;
+    }
+    .contact-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; color: var(--text-secondary);
+    }
+    .contact-item svg { color: var(--accent); flex-shrink: 0; }
+    .hero-stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 20px; max-width: 680px;
+    }
+    .hero-stat {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px;
+    }
+    html.theme-light .hero-stat {
+      background: rgba(255,255,255,0.7); backdrop-filter: blur(8px);
+    }
+    .hero-stat-value {
+      font-size: 2.2rem; font-weight: 800; color: var(--accent);
+      line-height: 1; display: block; margin-bottom: 4px;
+    }
+    .hero-stat-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+
+    /* ===== SECTION ===== */
+    section { padding: 80px 0; }
+    .section-header { margin-bottom: 48px; }
+    .section-tag {
+      display: inline-block; font-size: 12px; font-weight: 600;
+      color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-divider {
+      width: 48px; height: 3px; background: var(--accent);
+      border-radius: 2px; margin-top: 16px;
+    }
+
+    /* ===== KPI GRID ===== */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .kpi-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px 24px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--kpi-color, var(--accent));
+    }
+    .kpi-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.12); border-color: rgba(59,130,246,0.2); }
+    .kpi-value {
+      font-size: 2.8rem; font-weight: 800;
+      color: var(--kpi-color, var(--accent));
+      line-height: 1; display: block; margin-bottom: 8px;
+    }
+    .kpi-label { font-size: 14px; color: var(--text-secondary); font-weight: 500; line-height: 1.4; }
+    .kpi-sub { font-size: 12px; color: var(--text-secondary); margin-top: 6px; opacity: 0.7; }
+
+    /* ===== TIMELINE ===== */
+    .timeline { position: relative; padding-left: 32px; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 8px; top: 0; bottom: 0;
+      width: 2px; background: var(--border);
+    }
+    .timeline-item { position: relative; margin-bottom: 48px; }
+    .timeline-item:last-child { margin-bottom: 0; }
+    .timeline-dot {
+      position: absolute; left: -28px; top: 4px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--accent); border: 2px solid var(--bg);
+      box-shadow: 0 0 0 3px var(--accent);
+    }
+    .timeline-dot.current {
+      background: var(--positive);
+      box-shadow: 0 0 0 3px var(--positive), 0 0 12px rgba(16,185,129,0.4);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    .timeline-period {
+      font-size: 12px; font-weight: 600; color: var(--accent);
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px;
+    }
+    .timeline-company {
+      font-size: 1.25rem; font-weight: 700; margin-bottom: 4px;
+    }
+    .timeline-role {
+      font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;
+    }
+    .timeline-achievements {
+      list-style: none; display: flex; flex-direction: column; gap: 8px;
+    }
+    .timeline-achievements li {
+      font-size: 14px; color: var(--text-secondary); padding-left: 16px;
+      position: relative; line-height: 1.6;
+    }
+    .timeline-achievements li::before {
+      content: '';
+      position: absolute; left: 0; top: 9px;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent);
+    }
+    .timeline-tag {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 11px; font-weight: 600;
+      background: rgba(59,130,246,0.1); color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .timeline-tag.success {
+      background: rgba(16,185,129,0.1); color: var(--positive);
+    }
+
+    /* ===== COMPETENCY GRID ===== */
+    .comp-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .comp-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .comp-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: rgba(59,130,246,0.2); }
+    .comp-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px; background: var(--icon-bg, rgba(59,130,246,0.1));
+    }
+    .comp-icon svg { color: var(--icon-color, var(--accent)); }
+    .comp-card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+    .comp-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+    /* ===== SKILL BARS ===== */
+    .skill-list { display: flex; flex-direction: column; gap: 14px; }
+    .skill-item { }
+    .skill-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .skill-name { font-size: 14px; font-weight: 500; }
+    .skill-level { font-size: 13px; color: var(--text-secondary); }
+    .skill-bar {
+      height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+    }
+    .skill-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+      transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+      width: 0;
+    }
+
+    /* ===== PROJECT CARDS ===== */
+    .project-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .project-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .project-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: rgba(59,130,246,0.2); }
+    .project-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    }
+    .project-badge.ai { background: rgba(139,92,246,0.12); color: var(--accent-secondary); }
+    .project-badge.cmmi { background: rgba(16,185,129,0.1); color: var(--positive); }
+    .project-badge.hw { background: rgba(59,130,246,0.1); color: var(--accent); }
+    .project-card h3 { font-size: 1.1rem; font-weight: 700; margin: 0; }
+    .project-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin: 0; flex: 1; }
+    .project-metrics {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;
+    }
+    .metric-pill {
+      padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 500;
+      background: var(--surface-hover); color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .metric-pill.highlight { background: rgba(59,130,246,0.08); color: var(--accent); border-color: rgba(59,130,246,0.2); }
+
+    /* ===== CHART SECTION ===== */
+    .chart-wrapper {
+      border-radius: 12px; background: var(--surface);
+      border: 1px solid var(--border); padding: 32px;
+    }
+    .chart-title {
+      font-size: 1rem; font-weight: 600; margin-bottom: 24px;
+      color: var(--text);
+    }
+    .chart-container { height: 300px; position: relative; }
+
+    /* ===== FILTER BAR ===== */
+    .filter-bar {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px;
+    }
+    .filter-btn {
+      padding: 7px 16px; border-radius: 100px; font-size: 13px; font-weight: 500;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text-secondary); cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .filter-btn:hover { background: var(--surface-hover); color: var(--text); }
+    .filter-btn.active {
+      background: var(--accent); border-color: var(--accent);
+      color: white;
+    }
+
+    /* ===== EDUCATION ===== */
+    .edu-card {
+      display: flex; gap: 20px; align-items: flex-start;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px;
+      transition: box-shadow 0.2s;
+    }
+    .edu-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .edu-icon {
+      width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(59,130,246,0.1);
+    }
+    .edu-info { flex: 1; }
+    .edu-period { font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 4px; }
+    .edu-school { font-size: 1.1rem; font-weight: 700; }
+    .edu-major { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+    .edu-gpa {
+      font-size: 13px; font-weight: 600;
+      color: var(--positive); background: rgba(16,185,129,0.1);
+      padding: 2px 8px; border-radius: 6px; margin-top: 8px; display: inline-block;
+    }
+
+    /* ===== CONTACT CTA ===== */
+    .cta-section {
+      background: linear-gradient(135deg, var(--hero-grad-1) 0%, var(--hero-grad-2) 100%);
+      border-radius: 20px; padding: 60px 48px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(59,130,246,0.15) 0%, transparent 70%);
+    }
+    .cta-section > * { position: relative; z-index: 1; }
+    .cta-section h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom: 16px; }
+    .cta-section p { color: var(--text-secondary); margin-bottom: 32px; font-size: 1.05rem; }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 600;
+      background: var(--accent); color: white; border: none; cursor: pointer;
+      font-family: inherit; display: inline-flex; align-items: center; gap: 8px;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary {
+      padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 600;
+      background: transparent; color: var(--text); border: 1px solid var(--border); cursor: pointer;
+      font-family: inherit; display: inline-flex; align-items: center; gap: 8px;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: var(--surface); }
+
+    /* ===== TAGS ===== */
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      padding: 5px 12px; border-radius: 100px; font-size: 13px; font-weight: 500;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text-secondary); transition: all 0.2s; cursor: default;
+    }
+    .tag:hover { background: var(--surface-hover); color: var(--text); border-color: var(--accent); }
+    .tag.accent { background: rgba(59,130,246,0.08); color: var(--accent); border-color: rgba(59,130,246,0.2); }
+    .tag.purple { background: rgba(139,92,246,0.08); color: var(--accent-secondary); border-color: rgba(139,92,246,0.2); }
+    .tag.green { background: rgba(16,185,129,0.08); color: var(--positive); border-color: rgba(16,185,129,0.2); }
+
+    /* ===== TWO-COL ===== */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+
+    /* ===== MISC ===== */
+    .section-bg { background: var(--surface); }
+    .section-bg-inner { padding: 80px 0; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      section { padding: 56px 0; }
+      .two-col { grid-template-columns: 1fr; }
+      .comp-grid { grid-template-columns: 1fr; }
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .cta-section { padding: 40px 24px; }
+    }
+    @media (max-width: 375px) {
+      body { overflow-x: hidden; }
+      .hero-stats { grid-template-columns: 1fr 1fr; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .container { padding: 0 16px; }
+      h1 .name-ko { font-size: 2.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">메인 콘텐츠로 이동</a>
+
+  <!-- MENU -->
+  <div class="viz-menu">
+    <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="메뉴">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
+      </svg>
+    </button>
+    <div class="viz-menu-dropdown" id="vizMenuDropdown">
+      <button onclick="cycleTheme()"><span id="themeIcon">🌙</span><span id="themeLabel">Dark</span></button>
+      <button onclick="downloadImage()"><span>📥</span><span>Download PNG</span></button>
+      <button onclick="window.print()"><span>🖨️</span><span>Print / PDF</span></button>
+    </div>
+  </div>
+
+  <main id="main-content" role="main">
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" aria-labelledby="hero-name">
+      <div class="container hero-inner">
+        <div class="hero-badge animate">
+          <span class="hero-badge-dot"></span>
+          반도체 SW · AI 자동화 엔지니어
+        </div>
+        <h1 id="hero-name">
+          <span class="name-ko animate delay-1">이 길 우</span>
+          <span class="name-title animate delay-2">Semiconductor SW Dev · AI Agent Architect</span>
+        </h1>
+        <p class="hero-desc animate delay-3">
+          반도체 CVD 장비 SW 개발 9년 · EES/RMS 시스템 통합 · SECS/GEM 전문가.<br>
+          CMMI Level 3 국내 반도체 설비 업체 최초 인증 담당. AI 에이전트 기반 개발 자동화로 ROI 19배를 실현한 엔지니어입니다.
+        </p>
+        <div class="hero-contact animate delay-4">
+          <span class="contact-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.5 11a19.79 19.79 0 01-3.07-8.67A2 2 0 012.44 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 9.91a16 16 0 006.18 6.18l1.27-1.28a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            010-7308-5631
+          </span>
+          <span class="contact-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            dreamattic89@naver.com
+          </span>
+          <span class="contact-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            충청북도 청주시
+          </span>
+        </div>
+        <div class="hero-stats animate delay-5">
+          <div class="hero-stat">
+            <span class="hero-stat-value" data-count="9" data-suffix="+">9+</span>
+            <span class="hero-stat-label">반도체 SW 개발 경력</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value" data-count="19" data-suffix="×">19×</span>
+            <span class="hero-stat-label">AI 활용 ROI</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value" data-count="290">290</span>
+            <span class="hero-stat-label">운용 설비 대수</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value" data-count="128" data-suffix="+">128+</span>
+            <span class="hero-stat-label">AI 활용 업무 건수</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== KEY METRICS ===== -->
+    <section aria-labelledby="metrics-title">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-tag">Key Achievements</span>
+          <h2 id="metrics-title">핵심 성과 지표</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card animate" style="--kpi-color: var(--accent);">
+            <span class="kpi-value" data-count="9" data-suffix="년">9년</span>
+            <div class="kpi-label">반도체 CVD 장비 SW 개발</div>
+            <div class="kpi-sub">원익아이피에스 SW팀</div>
+          </div>
+          <div class="kpi-card animate delay-1" style="--kpi-color: var(--positive);">
+            <span class="kpi-value" data-count="3">3</span>
+            <div class="kpi-label">CMMI Level 인증 (국내 최초)</div>
+            <div class="kpi-sub">반도체 설비 업체 최초</div>
+          </div>
+          <div class="kpi-card animate delay-2" style="--kpi-color: var(--accent-secondary);">
+            <span class="kpi-value" data-count="19" data-suffix="×">19×</span>
+            <div class="kpi-label">AI 에이전트 ROI</div>
+            <div class="kpi-sub">월 $100 비용 대비</div>
+          </div>
+          <div class="kpi-card animate delay-3" style="--kpi-color: var(--warning);">
+            <span class="kpi-value" data-count="120" data-suffix="h">120h</span>
+            <div class="kpi-label">AI 활용 절감 시간</div>
+            <div class="kpi-sub">누적 128건+ 업무 자동화</div>
+          </div>
+          <div class="kpi-card animate delay-4" style="--kpi-color: var(--accent);">
+            <span class="kpi-value" data-count="6">6</span>
+            <div class="kpi-label">교육 강사 경력 (년)</div>
+            <div class="kpi-sub">삼성 · SK하이닉스 대상</div>
+          </div>
+          <div class="kpi-card animate delay-5" style="--kpi-color: var(--positive);">
+            <span class="kpi-value" data-count="13">13</span>
+            <div class="kpi-label">AI 에이전트 구현 수</div>
+            <div class="kpi-sub">커맨드 18개 · 훅 12개</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CAREER TIMELINE ===== -->
+    <div class="section-bg">
+      <section class="section-bg-inner" aria-labelledby="career-title">
+        <div class="container">
+          <div class="section-header" data-reveal>
+            <span class="section-tag">Career</span>
+            <h2 id="career-title">경력 타임라인</h2>
+            <div class="section-divider"></div>
+          </div>
+          <div class="timeline">
+
+            <!-- 네패스 -->
+            <div class="timeline-item" data-reveal>
+              <div class="timeline-dot current"></div>
+              <div class="timeline-period">2025.11 — 현재</div>
+              <span class="timeline-tag success">현재 재직 중</span>
+              <div class="timeline-company">㈜네패스 — AI장비파트 책임</div>
+              <div class="timeline-role">반도체 후공정 전문기업 · 패키징 · 테스트 · EES/RMS/FDC</div>
+              <ul class="timeline-achievements">
+                <li>AI 에이전트 프레임워크(nepes-ai-agents) 설계·구축·운영 — v2.5.8, 에이전트 13개, 커맨드 18개, 훅 12개</li>
+                <li>Git 워크플로우 멀티 프로젝트 표준화: 3-Level SEMVER + Annotated Tag, 6개 프로젝트 일괄 적용</li>
+                <li>장비 로그 원격 분석 파이프라인 구축 (FTP 자동 수집 → Oracle DB MCP → SECS/GEM 스펙 크로스체크)</li>
+                <li>MPM 자동 삭제 기능 개발 (S7F9/S7F10/S7F13) — 수동 삭제 작업 100% 자동화</li>
+                <li>YTAP Manager: Java ProcessManager + CLI + HTTP API, C# 런처, 50개+ 인스턴스 중앙 관리</li>
+                <li>CMMI 프로세스 자동화: PPQA 셀프 감사, CM Audit, Obsidian 형상관리 문서 12건 마이그레이션</li>
+                <li>AI 활용 실적: 누적 128건+, 추정 ~120시간 절감, 월 $100 대비 ROI 최대 19배 달성</li>
+              </ul>
+            </div>
+
+            <!-- 원익IPS -->
+            <div class="timeline-item" data-reveal>
+              <div class="timeline-dot"></div>
+              <div class="timeline-period">2014.02 — 2023.04 · 9년 2개월</div>
+              <span class="timeline-tag">전 직장</span>
+              <div class="timeline-company">㈜원익아이피에스 — SW팀 대리</div>
+              <div class="timeline-role">반도체 장비 제조업체 · CVD 설비 · 매출 7,400억 · 직원 1,496명</div>
+              <ul class="timeline-achievements">
+                <li>CVD 장비 Software Application 개발 (설비 UX/UI 포함) — TEOS, ARC, Mold 공정</li>
+                <li>CVD 장비 Serial 통신 Driver 개발 (RS-232, RS-485 2wire)</li>
+                <li>Modbus 및 협력업체 통신 Protocol 개발 (Yaskawa, Mars, Plasmart, NPP 등)</li>
+                <li>CMMI Level 2 인증 심사 메인 담당자 합격 (2019.11)</li>
+                <li>CMMI Level 3 인증 심사 메인 담당자 합격 — 국내 반도체 설비 업체 최초</li>
+                <li>설비 교육 강사 (삼성·SK하이닉스 대상, 2017–2023) — 290대 설비 운용</li>
+                <li>국내외 SW Specification, Manual, Trouble Shooting Guide 문서 작성 및 교육</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== CORE COMPETENCIES ===== -->
+    <section aria-labelledby="comp-title">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-tag">Competencies</span>
+          <h2 id="comp-title">핵심 역량</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="comp-grid">
+          <div class="comp-card" data-reveal>
+            <div class="comp-icon" style="--icon-bg: rgba(59,130,246,0.1); --icon-color: var(--accent);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <h3>반도체 장비 SW 개발</h3>
+            <p>C/C++, Java 기반 CVD 설비 Application 및 Serial 통신 Driver 개발. TEOS, ARC, Mold 공정 Recipe Sequence 개발 경험 보유.</p>
+          </div>
+          <div class="comp-card" data-reveal>
+            <div class="comp-icon" style="--icon-bg: rgba(139,92,246,0.1); --icon-color: var(--accent-secondary);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <h3>SECS/GEM 통신 전문성</h3>
+            <p>Semi Spec 기반 장비-호스트 통신 설계 및 트러블슈팅. S7F9/S7F10/S7F13 등 SECS 메시지 구현 및 End-to-End 통신 아키텍처 설계.</p>
+          </div>
+          <div class="comp-card" data-reveal>
+            <div class="comp-icon" style="--icon-bg: rgba(16,185,129,0.1); --icon-color: var(--positive);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <h3>고객 기술지원 · 교육</h3>
+            <p>삼성·SK하이닉스 대상 6년간 설비 교육 강사. 290대 설비 운용 경험. 현장 중심 UX 개선으로 Operation Miss 근본 해결.</p>
+          </div>
+          <div class="comp-card" data-reveal>
+            <div class="comp-icon" style="--icon-bg: rgba(245,158,11,0.1); --icon-color: var(--warning);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <h3>품질 프로세스 (CMMI)</h3>
+            <p>CMMI Level 3 인증 심사 메인 담당 — 국내 반도체 설비 업체 최초 합격. PPQA 셀프 감사·CM Audit 자동화 구현.</p>
+          </div>
+          <div class="comp-card" data-reveal>
+            <div class="comp-icon" style="--icon-bg: rgba(139,92,246,0.1); --icon-color: var(--accent-secondary);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07M8.46 8.46a5 5 0 000 7.07"/></svg>
+            </div>
+            <h3>AI 에이전트 아키텍처</h3>
+            <p>Claude AI 기반 에이전트 프레임워크(nepes-ai-agents) 설계·구축. 6개 프로젝트 표준화 워크플로우 일괄 적용. 월 $100 대비 ROI 19배.</p>
+          </div>
+          <div class="comp-card" data-reveal>
+            <div class="comp-icon" style="--icon-bg: rgba(59,130,246,0.1); --icon-color: var(--accent);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            </div>
+            <h3>EES/RMS/FDC 시스템</h3>
+            <p>Oracle DB 기반 FDC 데이터 수집 체계 구축 및 쿼리 최적화. 장비 로그 원격 분석 파이프라인 구축 (FTP → DB → 스펙 크로스체크).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FEATURED PROJECTS ===== -->
+    <div class="section-bg">
+      <section class="section-bg-inner" aria-labelledby="projects-title">
+        <div class="container">
+          <div class="section-header" data-reveal>
+            <span class="section-tag">Projects</span>
+            <h2 id="projects-title">주요 프로젝트</h2>
+            <div class="section-divider"></div>
+          </div>
+
+          <!-- Filter -->
+          <div class="filter-bar" role="group" aria-label="프로젝트 필터">
+            <button class="filter-btn active" onclick="filterProjects('all', this)">전체</button>
+            <button class="filter-btn" onclick="filterProjects('ai', this)">AI 자동화</button>
+            <button class="filter-btn" onclick="filterProjects('hw', this)">장비 SW</button>
+            <button class="filter-btn" onclick="filterProjects('cmmi', this)">CMMI/품질</button>
+          </div>
+
+          <div class="project-grid" id="projectGrid">
+
+            <div class="project-card" data-category="ai" data-reveal>
+              <span class="project-badge ai">AI 자동화</span>
+              <h3>nepes-ai-agents 프레임워크</h3>
+              <p>Claude AI 기반 에이전트 13개, 커맨드 18개, 훅 12개로 구성된 개발 자동화 인프라. 6개 프로젝트 표준화 Git 워크플로우·코드 리뷰·CMMI 감사 자동화 적용.</p>
+              <div class="project-metrics">
+                <span class="metric-pill highlight">ROI 19×</span>
+                <span class="metric-pill">월 $100 비용</span>
+                <span class="metric-pill">128건+ 업무</span>
+                <span class="metric-pill">~120h 절감</span>
+              </div>
+            </div>
+
+            <div class="project-card" data-category="ai" data-reveal>
+              <span class="project-badge ai">AI 자동화</span>
+              <h3>YTAP Manager</h3>
+              <p>Java ProcessManager + CLI + HTTP API, C# 런처로 구성된 YTAP 인스턴스 중앙 관리 시스템. 50개 이상의 인스턴스를 단일 인터페이스로 모니터링·제어.</p>
+              <div class="project-metrics">
+                <span class="metric-pill highlight">50+ 인스턴스</span>
+                <span class="metric-pill">Java</span>
+                <span class="metric-pill">C#</span>
+                <span class="metric-pill">HTTP API</span>
+              </div>
+            </div>
+
+            <div class="project-card" data-category="ai" data-reveal>
+              <span class="project-badge ai">AI 자동화</span>
+              <h3>장비 로그 원격 분석 파이프라인</h3>
+              <p>FTP 자동 수집 → Oracle DB MCP → SECS/GEM 스펙 크로스체크로 이어지는 완전 자동화 로그 분석 파이프라인. 장애 대응 시간 대폭 단축.</p>
+              <div class="project-metrics">
+                <span class="metric-pill highlight">100% 자동화</span>
+                <span class="metric-pill">Oracle DB</span>
+                <span class="metric-pill">SECS/GEM</span>
+                <span class="metric-pill">FTP</span>
+              </div>
+            </div>
+
+            <div class="project-card" data-category="hw" data-reveal>
+              <span class="project-badge hw">장비 SW</span>
+              <h3>CVD 설비 Application 개발</h3>
+              <p>TEOS, ARC, Mold 공정 CVD 설비 SW 개발. UX/UI 설계부터 공정 Recipe Sequence까지 End-to-End 담당. Operation Miss 방지 UX 개선 (Red Color + 2-click 네비게이션).</p>
+              <div class="project-metrics">
+                <span class="metric-pill highlight">C/C++</span>
+                <span class="metric-pill">9년 운영</span>
+                <span class="metric-pill">UX/UI</span>
+                <span class="metric-pill">삼성·SK향</span>
+              </div>
+            </div>
+
+            <div class="project-card" data-category="hw" data-reveal>
+              <span class="project-badge hw">장비 SW</span>
+              <h3>Serial 통신 Driver 개발</h3>
+              <p>RS-232, RS-485 2wire 기반 CVD 장비 통신 드라이버 개발. Modbus 및 Yaskawa·Mars·Plasmart·NPP 등 협력업체 프로토콜 구현.</p>
+              <div class="project-metrics">
+                <span class="metric-pill highlight">RS-232/485</span>
+                <span class="metric-pill">Modbus</span>
+                <span class="metric-pill">C/C++</span>
+                <span class="metric-pill">Multi-vendor</span>
+              </div>
+            </div>
+
+            <div class="project-card" data-category="cmmi" data-reveal>
+              <span class="project-badge cmmi">CMMI/품질</span>
+              <h3>CMMI Level 3 인증 (국내 최초)</h3>
+              <p>국내 반도체 설비 업체 최초 CMMI Level 3 인증 심사 메인 담당. 설비 개발 기획부터 출시까지 전 과정 프로세스 체계화. Level 2 (2019)에 이어 연속 인증 주도.</p>
+              <div class="project-metrics">
+                <span class="metric-pill highlight">국내 최초</span>
+                <span class="metric-pill">CMMI Lv.3</span>
+                <span class="metric-pill">CMMI Lv.2</span>
+                <span class="metric-pill">프로세스 설계</span>
+              </div>
+            </div>
+
+            <div class="project-card" data-category="cmmi" data-reveal>
+              <span class="project-badge cmmi">CMMI/품질</span>
+              <h3>CMMI 프로세스 자동화 (네패스)</h3>
+              <p>AI 에이전트를 활용한 PPQA 셀프 감사 자동화, CM Audit, Obsidian 기반 형상관리 문서 12건 마이그레이션으로 품질 프로세스 전면 자동화.</p>
+              <div class="project-metrics">
+                <span class="metric-pill highlight">PPQA 자동화</span>
+                <span class="metric-pill">CM Audit</span>
+                <span class="metric-pill">Obsidian</span>
+                <span class="metric-pill">문서 12건</span>
+              </div>
+            </div>
+
+            <div class="project-card" data-category="hw" data-reveal>
+              <span class="project-badge hw">장비 SW</span>
+              <h3>MPM 자동 삭제 기능</h3>
+              <p>SECS 메시지 S7F9/S7F10/S7F13을 활용한 MPM(Material Process Management) 자동 삭제 기능 개발 및 검증. 수동 삭제 작업 100% 자동화.</p>
+              <div class="project-metrics">
+                <span class="metric-pill highlight">100% 자동화</span>
+                <span class="metric-pill">S7F9/F10/F13</span>
+                <span class="metric-pill">SECS/GEM</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== SKILLS & CHART ===== -->
+    <section aria-labelledby="skills-title">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-tag">Skills</span>
+          <h2 id="skills-title">기술 스택</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="two-col" style="align-items: start; gap: 40px;">
+          <div data-reveal>
+            <div class="skill-list" id="skillList">
+              <div class="skill-item">
+                <div class="skill-header"><span class="skill-name">C / C++</span><span class="skill-level">9년</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="92"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-header"><span class="skill-name">Java</span><span class="skill-level">중급</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="72"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-header"><span class="skill-name">SECS/GEM · Semi Spec</span><span class="skill-level">전문가</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-header"><span class="skill-name">AI 에이전트 (Claude)</span><span class="skill-level">설계·구축</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-header"><span class="skill-name">Oracle DB / FDC</span><span class="skill-level">중급</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-header"><span class="skill-name">Git 워크플로우 / SEMVER</span><span class="skill-level">고급</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-header"><span class="skill-name">CMMI 프로세스</span><span class="skill-level">Lv.3 메인</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-header"><span class="skill-name">Serial 통신 (RS-232/485)</span><span class="skill-level">전문가</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+              </div>
+            </div>
+          </div>
+          <div data-reveal>
+            <div class="chart-wrapper">
+              <div class="chart-title">역량 도메인 분포</div>
+              <div class="chart-container" role="img" aria-label="역량 도메인별 분포 레이더 차트: 장비SW 95, SECS/GEM 95, AI/자동화 88, DB/FDC 70, 품질/CMMI 90, 고객기술지원 88">
+                <canvas id="radarChart"></canvas>
+              </div>
+            </div>
+            <div class="tag-cloud" style="margin-top: 20px;">
+              <span class="tag accent">C/C++</span>
+              <span class="tag accent">Java</span>
+              <span class="tag purple">Claude AI</span>
+              <span class="tag purple">AI Agent</span>
+              <span class="tag accent">SECS/GEM</span>
+              <span class="tag accent">Semi Spec</span>
+              <span class="tag green">CMMI Lv.3</span>
+              <span class="tag">Oracle DB</span>
+              <span class="tag">Git/SEMVER</span>
+              <span class="tag">RS-232/485</span>
+              <span class="tag">Modbus</span>
+              <span class="tag">FDC</span>
+              <span class="tag">EES/RMS</span>
+              <span class="tag">CVD 설비</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EDUCATION ===== -->
+    <div class="section-bg">
+      <section class="section-bg-inner" aria-labelledby="edu-title">
+        <div class="container">
+          <div class="section-header" data-reveal>
+            <span class="section-tag">Education</span>
+            <h2 id="edu-title">학력</h2>
+            <div class="section-divider"></div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 16px; max-width: 700px;">
+            <div class="edu-card" data-reveal>
+              <div class="edu-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              </div>
+              <div class="edu-info">
+                <div class="edu-period">2008.03 — 2014.02</div>
+                <div class="edu-school">한국산업기술대학교</div>
+                <div class="edu-major">메카트로닉스 전공</div>
+                <span class="edu-gpa">학점 4.08 / 4.5</span>
+              </div>
+            </div>
+            <div class="edu-card" data-reveal>
+              <div class="edu-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
+              <div class="edu-info">
+                <div class="edu-period">2005.03 — 2008.02</div>
+                <div class="edu-school">양지고등학교</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== CTA ===== -->
+    <section aria-labelledby="cta-title" style="padding: 80px 0;">
+      <div class="container">
+        <div class="cta-section" data-reveal>
+          <h2 id="cta-title">함께 성장할 기회를 기다립니다</h2>
+          <p>반도체 장비 SW 9년 경력 + AI 자동화 인프라 구축 역량으로<br>기술 혁신과 프로세스 발전에 기여하겠습니다.</p>
+          <div class="cta-btns">
+            <button class="btn-primary" onclick="window.location.href='mailto:dreamattic89@naver.com'">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              이메일 보내기
+            </button>
+            <button class="btn-secondary" onclick="window.print()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              PDF로 저장
+            </button>
+          </div>
+          <div style="margin-top: 32px; font-size: 14px; color: var(--text-secondary);">
+            010-7308-5631 &nbsp;·&nbsp; dreamattic89@naver.com &nbsp;·&nbsp; 충청북도 청주시
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script>
+    // === Menu ===
+    function toggleMenu() {
+      var dropdown = document.getElementById('vizMenuDropdown');
+      if (dropdown) dropdown.classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.viz-menu')) {
+        var dropdown = document.getElementById('vizMenuDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+      }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var dropdown = document.getElementById('vizMenuDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+      }
+    });
+
+    // === Safe localStorage ===
+    function safeGetItem(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
+    function safeSetItem(key, value) { try { localStorage.setItem(key, value); } catch(e) {} }
+
+    // === Theme ===
+    var savedTheme = safeGetItem('viz-theme');
+    var currentTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    function applyTheme(t) {
+      document.documentElement.className = 'theme-' + t;
+      document.getElementById('themeIcon').textContent = t === 'dark' ? '🌙' : '☀️';
+      document.getElementById('themeLabel').textContent = t === 'dark' ? 'Dark' : 'Light';
+      safeSetItem('viz-theme', t);
+      currentTheme = t;
+      if (typeof onThemeChange === 'function') onThemeChange();
+    }
+    function cycleTheme() { applyTheme(currentTheme === 'dark' ? 'light' : 'dark'); }
+    applyTheme(currentTheme);
+
+    // === Scroll Reveal ===
+    document.querySelectorAll('[data-reveal]').forEach(function(el) { el.classList.add('reveal'); });
+    var revealObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.observe(el); });
+
+    // === Number Counter ===
+    function animateCounters() {
+      document.querySelectorAll('[data-count]').forEach(function(el) {
+        if (el.dataset.counted) return;
+        el.dataset.counted = '1';
+        var target = parseFloat(el.dataset.count);
+        var prefix = el.dataset.prefix || '';
+        var suffix = el.dataset.suffix || '';
+        var start = performance.now(), duration = 1400;
+        (function tick(now) {
+          var p = Math.min((now - start) / duration, 1), eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        })(start);
+      });
+    }
+    var firstCounter = document.querySelector('[data-count]');
+    if (firstCounter) {
+      var cObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) { if (e.isIntersecting) { animateCounters(); cObs.disconnect(); } });
+      }, { threshold: 0.2 });
+      cObs.observe(firstCounter);
+    }
+
+    // === Skill Bar Animation ===
+    var skillObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll('.skill-fill').forEach(function(fill) {
+            var w = fill.getAttribute('data-width');
+            if (w) fill.style.width = w + '%';
+          });
+          skillObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    var skillList = document.getElementById('skillList');
+    if (skillList) skillObserver.observe(skillList);
+
+    // === Project Filter ===
+    function filterProjects(cat, btn) {
+      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.querySelectorAll('.project-card').forEach(function(card) {
+        if (cat === 'all' || card.dataset.category === cat) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // === Chart.js ===
+    var chartsBuilt = false;
+    function getThemeColors() {
+      var isDark = document.documentElement.classList.contains('theme-dark');
+      return {
+        text: isDark ? '#EDEDED' : '#0f172a',
+        textSecondary: isDark ? '#888888' : '#64748b',
+        border: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)',
+        accent: isDark ? '#3b82f6' : '#2563eb',
+        accentSecondary: isDark ? '#8b5cf6' : '#7c3aed',
+        positive: isDark ? '#10b981' : '#059669',
+        bgFill: isDark ? 'rgba(59,130,246,0.15)' : 'rgba(37,99,235,0.12)',
+      };
+    }
+
+    function buildCharts() {
+      if (typeof Chart === 'undefined') { console.error('Chart.js not loaded'); return; }
+      if (chartsBuilt) { chartsBuilt = false; }
+
+      var c = getThemeColors();
+      Chart.defaults.color = c.textSecondary;
+
+      // Radar chart
+      var radarCanvas = document.getElementById('radarChart');
+      if (!radarCanvas) return;
+
+      // Destroy existing
+      var existing = Chart.getChart(radarCanvas);
+      if (existing) existing.destroy();
+
+      radarCanvas.setAttribute('role', 'img');
+      radarCanvas.setAttribute('aria-label', '역량 도메인별 분포 레이더 차트');
+
+      new Chart(radarCanvas, {
+        type: 'radar',
+        data: {
+          labels: ['장비 SW', 'SECS/GEM', 'AI/자동화', 'DB/FDC', '품질/CMMI', '고객지원'],
+          datasets: [{
+            label: '역량 수준',
+            data: [95, 95, 88, 70, 90, 88],
+            backgroundColor: c.bgFill,
+            borderColor: c.accent,
+            borderWidth: 2,
+            pointBackgroundColor: c.accent,
+            pointBorderColor: 'transparent',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              enabled: true,
+              padding: 10,
+              cornerRadius: 8,
+              titleFont: { size: 13 },
+              bodyFont: { size: 12 },
+            }
+          },
+          scales: {
+            r: {
+              min: 0, max: 100,
+              ticks: {
+                stepSize: 25,
+                color: c.textSecondary,
+                font: { size: 11 },
+                backdropColor: 'transparent',
+                display: false,
+              },
+              grid: { color: c.border },
+              angleLines: { color: c.border },
+              pointLabels: {
+                color: c.text,
+                font: { size: 13, weight: '500', family: 'Noto Sans KR' }
+              }
+            }
+          }
+        }
+      });
+
+      chartsBuilt = true;
+    }
+
+    function onThemeChange() {
+      setTimeout(buildCharts, 80);
+    }
+
+    // Build after page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', buildCharts);
+    } else {
+      buildCharts();
+    }
+
+    // === Download PNG ===
+    async function downloadImage() {
+      var menu = document.querySelector('.viz-menu');
+      menu.style.display = 'none';
+      try {
+        var url = await htmlToImage.toPng(document.body, { quality: 1, pixelRatio: 2 });
+        var a = document.createElement('a'); a.href = url;
+        a.download = 'portfolio-leegiwu.png'; a.click();
+      } catch(e) { console.error('Download failed:', e); }
+      menu.style.display = '';
+    }
+  </script>
+</body>
+</html>
